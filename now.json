@@ -1,0 +1,11 @@
+{
+    "version": 2,
+    "builds": [
+        { "src": "www/talina/package.json", "use": "@now/static-build" },
+        { "src": "api/product/*.js", "use": "@now/node" }
+    ],
+    "routes": [
+        { "src": "/(.*)", "dest": "/www/talina/$1" },
+        { "src": "/api/product", "methods": ["GET"], "dest": "/api/product/index.js" }
+    ]
+}
