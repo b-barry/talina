@@ -76,7 +76,7 @@ export default {
     }
   },
   async created() {
-    const res = await fetch("/api/product", {
+    const res = await fetch("https://getproduct-8tfxc0mgi.now.sh/", {
       method: "GET"
     });
     const response = await res.json();
