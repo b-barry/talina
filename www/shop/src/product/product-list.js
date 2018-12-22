@@ -1,5 +1,6 @@
 import {graphql, StaticQuery} from 'gatsby';
-import React from 'react';
+import React, {Component} from 'react';
+import {AppContext} from '../app-context';
 import Product from './product';
 
 const query = graphql`
@@ -35,19 +36,22 @@ const query = graphql`
     }
 `;
 
-const ProductList = () => {
-  function addToCart(product, quantity) {
-    console.log('product', product, quantity);
+class ProductList extends Component {
+  render() {
+    const {addToCart} = this.context;
+    return (
+      <StaticQuery
+        query={query}
+        render={data => {
+          return data.products.edges.map(edge => <Product key={edge.node.id} data={edge.node}
+                                                          addToCart={addToCart}/>);
+        }}
+      />
+    );
   }
+}
 
-  return (
-    <StaticQuery
-      query={query}
-      render={data => {
-        return data.products.edges.map(edge => <Product key={edge.node.id} data={edge.node} addToCart={addToCart}/>);
-      }}
-    />
-  );
-};
+ProductList.contextType = AppContext;
+
 
 export default ProductList;
