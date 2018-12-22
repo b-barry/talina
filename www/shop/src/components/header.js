@@ -1,7 +1,9 @@
-import React from 'react'
+import React from 'react';
+import CartButton from './cart-button';
 
-const Header = () => (
-  <nav className="font-sans bg-white text-center flex justify-between my-4 mx-auto container overflow-hidden items-center">
+const Header = ({itemsInCartCount}) => (
+  <nav
+    className="font-sans bg-white text-center flex justify-between my-4 mx-auto container overflow-hidden items-center">
     <div className="flex items-center">
       <a href="/" className="w-16">
         <img
@@ -29,7 +31,8 @@ const Header = () => (
         </li>
       </ul>
     </div>
+    <CartButton count={itemsInCartCount} />
   </nav>
-)
+);
 
-export default Header
+export default Header;

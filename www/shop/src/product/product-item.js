@@ -16,6 +16,9 @@ class ProductItem extends Component {
   }
 
   handleSubmit() {
+    if (this.state.quantity < 1) {
+      return;
+    }
     this.props.addToCart(this.state.quantity);
   }
 
