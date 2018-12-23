@@ -10,7 +10,6 @@ function CartRow({
   onUpdateQuantity,
   onRemoveFromCart,
 }) {
-  console.log('onRemoveFromCart', id)
   return (
     <li className="inline-block border-b border-grey-lighter flex justify-between flex-wrap py-4">
       <div className="flex items-start w-4/5">

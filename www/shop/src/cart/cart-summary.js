@@ -1,6 +1,16 @@
+import PropTypes from 'prop-types'
 import React from 'react'
+import { priceFormat } from '../utils'
 
-function CartSummary() {
+const getTotal = (subtotal, shippingFee, isShippingFree = false) => {
+  let fee = 0
+  if (!isShippingFree) {
+    fee = shippingFee
+  }
+  return `${parseInt(subtotal, 10) + parseInt(fee, 10)}`
+}
+
+function CartSummary({ subtotal, shippingFee, isShippingFree = false }) {
   return (
     <div
       className="w-full mt-4 mb-6 lg:mb-0 lg:w-1/3 px-4 flex flex-col"
@@ -18,7 +28,7 @@ function CartSummary() {
           </div>
           <div className="w-1/4 pr-6 flex items-center text-right">
             <div className="w-full flex">
-              <span className="text-sm">99,90 €</span>
+              <span className="text-sm">{priceFormat(subtotal)}</span>
             </div>
           </div>
         </div>
@@ -30,7 +40,9 @@ function CartSummary() {
           </div>
           <div className="w-1/4 pr-6 flex items-center text-right">
             <div className="w-full flex border-b border-grey-lighter-lighter pb-4">
-              <span className="text-sm">gratuite</span>
+              <span className="text-sm">
+                {isShippingFree ? 'gratuit' : priceFormat(shippingFee)}
+              </span>
             </div>
           </div>
         </div>
@@ -42,7 +54,9 @@ function CartSummary() {
           </div>
           <div className="w-1/4 pr-6 flex items-center text-right">
             <div className="w-full flex">
-              <span className="text-sm font-bold">99,90 €</span>
+              <span className="text-sm font-bold">
+                {priceFormat(getTotal(subtotal, shippingFee, isShippingFree))}
+              </span>
             </div>
           </div>
         </div>
@@ -56,6 +70,12 @@ function CartSummary() {
       </div>
     </div>
   )
+}
+
+CartSummary.propTypes = {
+  subtotal: PropTypes.string,
+  shippingFee: PropTypes.string,
+  isShippingFree: PropTypes.string,
 }
 
 export default CartSummary

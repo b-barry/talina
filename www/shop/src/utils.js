@@ -20,6 +20,8 @@ export function priceFormat(value, country = 'fr-BE', divideBy100 = true) {
 
 export const sumCartQuantities = (cart = []) =>
   cart.reduce((acc, next) => acc + next.quantity, 0)
+export const sumCartPrices = (cart = []) =>
+  cart.reduce((acc, next) => acc + next.price * next.quantity, 0)
 
 export function range(size, startAt = 0) {
   return Array.from(Array(10).keys()).map(i => i + startAt)
