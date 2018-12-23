@@ -1,2 +1,23 @@
 @import "stitches.css";
 @import "font.css";
+
+/**
+    Missing tailwind css class
+ */
+.appearance-none {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.text-blue-darkest{
+    color: #12283A;
+}
+
+.pb-5 {
+    padding-bottom: 1.25rem;
+}
+
+.pt-1 {
+    padding-top: 0.25rem;
+}

@@ -1,32 +1,25 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {priceFormat} from '../utils';
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import { priceFormat } from '../utils'
 
 class ProductItem extends Component {
   constructor(props) {
-    super(props);
-    this.state = {quantity: 1};
+    super(props)
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleChange(event) {
-    this.setState({quantity: event.target.value});
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   handleSubmit() {
-    if (this.state.quantity < 1) {
-      return;
-    }
-    this.props.addToCart(this.state.quantity);
+    this.props.addToCart(1)
   }
 
   render() {
-    let {price, attributes: {size, pack}} = this.props;
+    let {
+      price,
+      attributes: { size, pack },
+    } = this.props
     return (
-      <div
-        className="w-full sm:w-1/2 md:w-1/3 flex flex-col items-center justify-center h-48 md:h-64 border-grey-lightest border-r border-b hover:shadow-md hover:border-0 bg-white hover:transform-scale-subtle transition-normal hover:show-child">
+      <div className="w-full sm:w-1/2 md:w-1/3 flex flex-col items-center justify-center h-48 md:h-64 border-grey-lightest border-r border-b hover:shadow-md hover:border-0 bg-white hover:transform-scale-subtle transition-normal hover:show-child">
         <h1
           htmlFor=""
           className="uppercase tracking-loose font-bold text-5xl my-2"
@@ -40,17 +33,15 @@ class ProductItem extends Component {
           <strong className="text-black pr-2">{size}</strong>cl
         </p>
         <div className="mt-4 text-center text-grey-dark leading-normal px-6 lg:hidden hover:block">
-          <input className="text-center focus:outline-0 border border-black bg-white py-2 px-2 mb-2 mr-1 sm:mb-0"
-                 type="number" min="1" max="15"
-                 value={this.state.quantity} onChange={this.handleChange}/>
           <button
             onClick={this.handleSubmit}
-            className="bg-transparent hover:bg-black text-black-dark font-semibold hover:text-white py-2 px-4 border border-black hover:border-transparent">
+            className="bg-transparent hover:bg-black text-black-dark font-semibold hover:text-white py-2 px-4 border border-black hover:border-transparent"
+          >
             Add to cart
           </button>
         </div>
       </div>
-    );
+    )
   }
 }
 
@@ -68,6 +59,6 @@ ProductItem.propTypes = {
     type: PropTypes.string,
   }),
   currency: PropTypes.string,
-};
+}
 
-export default ProductItem;
+export default ProductItem
