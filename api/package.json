@@ -10,6 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "airtable": "^0.5.8",
     "dotenv-cli": "^1.4.0",
     "parcel-bundler": "^1.11.0",
     "stripe": "^6.19.0"
@@ -19,6 +20,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "now-we-test": "^0.3.0"
+    "now-we-test": "^0.3.0",
+    "typescript": "^3.2.2"
   }
 }
