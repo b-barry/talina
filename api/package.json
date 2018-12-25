@@ -1,0 +1,24 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "parcel watch **/*.ts --target node --bundle-node-modules",
+    "dev:api": "dotenv -e \".env.development\"  now-we-test serve ",
+    "build": "parcel build **/*.ts --target node --bundle-node-modules",
+    "deploy": "npm run build && now | now alias $1 talina",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv-cli": "^1.4.0",
+    "parcel-bundler": "^1.11.0",
+    "stripe": "^6.19.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "now-we-test": "^0.3.0"
+  }
+}
