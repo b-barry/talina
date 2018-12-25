@@ -6,3 +6,13 @@ export const getSkusWithProduct = (id): Promise<skus.ISku> => {
     expand: ['product']
   })
 };
+
+
+export const isSkuValid = async (id): Promise<boolean> => {
+  try {
+    const data = await stripe.skus.retrieve(id)
+    return !!data;
+  } catch (e) {
+    return false
+  }
+}
