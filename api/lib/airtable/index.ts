@@ -1,2 +1,2 @@
-export * from './airtable.symbol'
+export * from './symbol'
 export * from './cart-items'
