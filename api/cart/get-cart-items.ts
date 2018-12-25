@@ -1,6 +1,10 @@
-import {responseJson} from '../lib/util';
-import {AirtableApiResponse, AirtableCartItems, getAllCartItemsByCartId,} from '../lib/airtable';
-import {getSkusWithProduct} from '../lib/stripe';
+import { responseJson } from '../lib/util';
+import {
+  AirtableApiResponse,
+  AirtableCartItems,
+  getAllCartItemsByCartId,
+} from '../lib/airtable';
+import { getSkusWithProduct } from '../lib/stripe';
 import parse from 'url-parse';
 
 module.exports = async (req, res) => {
@@ -10,7 +14,9 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const cartItems: AirtableApiResponse<AirtableCartItems>[] = await getAllCartItemsByCartId(query.customerCartId);
+  const cartItems: AirtableApiResponse<
+    AirtableCartItems
+  >[] = await getAllCartItemsByCartId(query.customerCartId);
 
   const cartItemsWithSku = await Promise.all(
     cartItems.map(async (item: AirtableApiResponse<AirtableCartItems>) => {

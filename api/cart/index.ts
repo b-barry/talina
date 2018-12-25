@@ -1,7 +1,7 @@
-import {responseJson} from '../lib/util';
+import { responseJson } from '../lib/util';
 
 module.exports = (req, res) => {
   responseJson(res, {
-    up: true
-  })
+    up: true,
+  });
 };

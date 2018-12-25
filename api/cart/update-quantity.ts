@@ -1,6 +1,6 @@
-import {responseJson} from '../lib/util';
-import {getSkusWithProduct, hasInStock, isSkuValid} from '../lib/stripe';
-import {addToCart, updateQuantity} from '../lib/airtable';
+import { responseJson } from '../lib/util';
+import { getSkusWithProduct, hasInStock, isSkuValid } from '../lib/stripe';
+import { addToCart, updateQuantity } from '../lib/airtable';
 import parse from 'url-parse';
 
 module.exports = async (req, res) => {
@@ -27,8 +27,12 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const record = await updateQuantity(customerCartId, skuId, parseInt(quantity,10));
-  if(!record){
+  const record = await updateQuantity(
+    customerCartId,
+    skuId,
+    parseInt(quantity, 10)
+  );
+  if (!record) {
     responseJson(res, { error: 'impossible to update quantity' }, 400);
     return;
   }

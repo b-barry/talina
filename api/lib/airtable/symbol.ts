@@ -1,5 +1,5 @@
 export enum AirtableView {
-  GRID = 'Grid view'
+  GRID = 'Grid view',
 }
 
 export interface AirtableApiResponse<T> {
@@ -43,4 +43,3 @@ export interface AirtableCartItems {
   customerCartId: string;
   stripeSkuId: string;
 }
-

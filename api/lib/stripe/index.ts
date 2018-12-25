@@ -1,2 +1,2 @@
-export * from './sku'
-export * from './symbol'
+export * from './sku';
+export * from './symbol';
