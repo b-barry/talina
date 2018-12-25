@@ -16,3 +16,13 @@ export const isSkuValid = async (id): Promise<boolean> => {
     return false
   }
 }
+
+
+export const hasInStock = async (id: string, quantity: string): Promise<boolean> => {
+  try {
+    const data = await stripe.skus.retrieve(id)
+    return data.inventory.quantity >= quantity;
+  } catch (e) {
+    return false
+  }
+}
