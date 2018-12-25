@@ -35,7 +35,7 @@ function CartSummary({ subtotal, shippingFee, isShippingFree = false }) {
         <div className="flex justify-between items-center mb-4">
           <div className="w-3/4 pl-6 flex items-center">
             <div className="w-full flex border-b border-grey-lighter-lighter pb-4">
-              <span className="text-sm">Livraison gratuite</span>
+              <span className="text-sm">Livraison </span>
             </div>
           </div>
           <div className="w-1/4 pr-6 flex items-center text-right">
