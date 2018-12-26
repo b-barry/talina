@@ -10,7 +10,7 @@ class ProductItem extends Component {
   }
 
   handleSubmit() {
-    this.props.addToCart(1)
+    this.props.addToCart()
   }
 
   render() {

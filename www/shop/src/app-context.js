@@ -1,106 +1,91 @@
-import React from 'react'
+import React from 'react';
+import {addToCart, fetchCartItems, removeFromCart, updateQuantity} from './api';
+import { generateCartId } from './utils';
 
-export const CART_STORAGE_KEY = 'TALINA_CART_PERSIST'
+export const CART_ID_KEY = 'talina-cart-id';
 
-export const getPersistedCartFromLocalStorage = () => {
-  return JSON.parse(localStorage.getItem(CART_STORAGE_KEY))
-}
+export const getPersistedCartIdFromLocalStorage = () => {
+  return localStorage.getItem(CART_ID_KEY);
+};
 
-export const persistCartToLocalStorage = (cart = []) => {
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart))
-}
+export const persistCartIdToLocalStorage = cartId => {
+  localStorage.setItem(CART_ID_KEY, cartId);
+};
 
 export const AppContext = React.createContext({
-  cart: getPersistedCartFromLocalStorage() || [],
-  addToCart: (product, quantity) => {},
-  updateQuantity: (id, quantity) => {},
-  removeFromCart: (id, quantity) => {},
-})
+  cart: [],
+  addToCart: (sku) => {},
+  updateQuantity: (skuId, quantity) => {},
+  removeFromCart: (skuId) => {},
+});
 
 class Provider extends React.Component {
   constructor(props) {
-    super(props)
-    this.addToCart = this.addToCart.bind(this)
-    this.updateQuantity = this.updateQuantity.bind(this)
-    this.removeFromCart = this.removeFromCart.bind(this)
+    super(props);
+    this.addToCart = this.addToCart.bind(this);
+    this.updateQuantity = this.updateQuantity.bind(this);
+    this.removeFromCart = this.removeFromCart.bind(this);
 
     this.state = {
-      cart: getPersistedCartFromLocalStorage() || [],
+      cartId: this.getCartId(),
+      cart: [],
       addToCart: this.addToCart,
       updateQuantity: this.updateQuantity,
       removeFromCart: this.removeFromCart,
-    }
+    };
   }
 
-  addToCart(product, quantity) {
-    this.setState(
-      state => {
-        let cart = [...state.cart]
-
-        const productIndexInCart = cart.findIndex(
-          item => item.id === product.id
-        )
-
-        if (productIndexInCart !== -1) {
-          const productInCart = cart[productIndexInCart]
-          cart[productIndexInCart] = {
-            ...productInCart,
-            quantity: productInCart.quantity + quantity,
-          }
-        } else {
-          cart = [
-            ...cart,
-            {
-              ...product,
-              quantity,
-            },
-          ]
-        }
-        return {
-          ...state,
-          cart,
-        }
-      },
-      () => {
-        persistCartToLocalStorage(this.state.cart)
-      }
-    )
+  getCartId() {
+    const id = getPersistedCartIdFromLocalStorage() || generateCartId();
+    persistCartIdToLocalStorage(id);
+    return id;
   }
 
-  updateQuantity(id, quantity) {
+  async componentDidMount() {
+    const cart = await fetchCartItems(this.state.cartId);
+
+    this.setState(state => ({
+      cart,
+    }));
+  }
+
+  async addToCart(sku) {
+    const record = await addToCart(this.state.cartId, sku.id);
+    this.setState(state => {
+      return {
+        ...state,
+        cart: state.cart
+          .filter(product => product.id !== record.id)
+          .concat([record]),
+      };
+    });
+  }
+
+  async updateQuantity(skuId, quantity) {
+    const record = await updateQuantity(this.state.cartId, skuId, quantity);
     this.setState(
       state => {
-        let cart = [...state.cart]
-        const productIndexInCart = cart.findIndex(item => item.id === id)
-        const productInCart = cart[productIndexInCart]
-        cart[productIndexInCart] = {
-          ...productInCart,
-          quantity: parseInt(quantity, 10),
-        }
+        let cart = [...state.cart];
+        const productIndexInCart = cart.findIndex(item => item.id === record.id);
+        cart[productIndexInCart] = record;
 
         return {
           ...state,
           cart,
-        }
-      },
-      () => {
-        persistCartToLocalStorage(this.state.cart)
-      }
-    )
+        };
+      });
   }
 
-  removeFromCart(id) {
+  async removeFromCart(skuId) {
+    await removeFromCart(this.state.cartId, skuId);
+
     this.setState(
       state => {
         return {
           ...state,
-          cart: state.cart.filter(item => item.id !== id),
-        }
-      },
-      () => {
-        persistCartToLocalStorage(this.state.cart)
-      }
-    )
+          cart: state.cart.filter(item => item.sku.id !== skuId),
+        };
+      });
   }
 
   render() {
@@ -108,8 +93,8 @@ class Provider extends React.Component {
       <AppContext.Provider value={this.state}>
         {this.props.children}
       </AppContext.Provider>
-    )
+    );
   }
 }
 
-export const AppProvider = Provider
+export const AppProvider = Provider;

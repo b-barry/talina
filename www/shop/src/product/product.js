@@ -1,35 +1,33 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { groupBy } from '../utils'
-import ProductItem from './product-item'
+import PropTypes from 'prop-types';
+import React from 'react';
+import {groupBy} from '../utils';
+import ProductItem from './product-item';
 
 const getProductItemsOrderBySizeAndQuantity = product => {
   const skus = product.skus.data.map(sku => {
-    return sku
-  })
+    return sku;
+  });
 
   const skusBySizeMap = groupBy(skus, sku => {
-    return sku.attributes.size
-  })
+    return sku.attributes.size;
+  });
 
   const orderedMapKeys = Object.keys(skusBySizeMap).sort(
     (a, b) => parseInt(a, 10) - parseInt(b, 10)
-  )
+  );
 
   return orderedMapKeys.reduce((acc, key) => {
     return [
       ...acc,
       ...skusBySizeMap[key].sort((a, b) => {
-        return parseInt(a.attributes.pack, 10) - parseInt(b.attributes.pack, 10)
+        return parseInt(a.attributes.pack, 10) - parseInt(b.attributes.pack, 10);
       }),
-    ]
-  }, [])
-}
+    ];
+  }, []);
+};
 
-const handleAddToCart = (addToCart, data) => quantity =>
-  addToCart(data, quantity)
 
-const Product = ({ data, addToCart }) => {
+const Product = ({data, addToCart}) => {
   return (
     <section className="my-8 font-sans container m-auto max-w-xl ">
       <div className="text-center">
@@ -40,16 +38,13 @@ const Product = ({ data, addToCart }) => {
           <ProductItem
             key={item.id}
             {...item}
-            addToCart={handleAddToCart(addToCart, {
-              ...item,
-              productName: data.name,
-            })}
+            addToCart={() => addToCart(item)}
           />
         ))}
       </div>
     </section>
-  )
-}
+  );
+};
 
 Product.propTypes = {
   addToCart: PropTypes.func,
@@ -77,6 +72,6 @@ Product.propTypes = {
       })
     ),
   }),
-}
+};
 
-export default Product
+export default Product;

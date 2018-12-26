@@ -38,7 +38,6 @@ class CartSelectQuantity extends Component {
   }
 
   handleUpdateQuantity(event) {
-    console.log('handleUpdateQuantity', this.props, event.target.value)
     this.props.onUpdateQuantity(this.props.skuId, event.target.value)
   }
 

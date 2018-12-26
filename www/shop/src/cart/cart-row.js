@@ -1,11 +1,14 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import CartSelectQuantity from './cart-select-quantity'
+import React from 'react';
+import PropTypes from 'prop-types';
+import CartSelectQuantity from './cart-select-quantity';
 
 function CartRow({
-  productName,
   id,
-  attributes: { size, pack },
+  sku: {
+    id:skuId,
+    attributes: { size, pack },
+    product,
+  },
   quantity,
   onUpdateQuantity,
   onRemoveFromCart,
@@ -15,7 +18,7 @@ function CartRow({
       <div className="flex items-start w-4/5">
         <div className="flex-1 overflow-hidden">
           <div className="pb-2">
-            <span className="text-sm font-normal">{productName}</span>
+            <span className="text-sm font-normal">{product.name}</span>
           </div>
           <p className="text-sm font-normal text-grey-dark">Size: {size} cl</p>
           <p className="text-sm font-normal text-grey-dark">
@@ -24,7 +27,7 @@ function CartRow({
         </div>
       </div>
       <CartSelectQuantity
-        skuId={id}
+        skuId={skuId}
         quantity={quantity}
         onUpdateQuantity={onUpdateQuantity}
       />
@@ -48,32 +51,96 @@ function CartRow({
         </svg>
         <button
           className="text-xs text-blue-darkest pt-1"
-          onClick={e => onRemoveFromCart(id)}
+          onClick={e => onRemoveFromCart(skuId)}
         >
           Supprimer
         </button>
       </div>
     </li>
-  )
+  );
 }
 
 CartRow.propTypes = {
-  productName: PropTypes.string,
-  onUpdateQuantity: PropTypes.func,
-  onRemoveFromCart: PropTypes.func,
-  id: PropTypes.string,
-  price: PropTypes.number,
-  attributes: PropTypes.shape({
-    size: PropTypes.string,
-    pack: PropTypes.string,
-  }),
-  object: PropTypes.string,
-  inventory: PropTypes.shape({
-    quantity: PropTypes.number,
-    type: PropTypes.string,
-  }),
-  currency: PropTypes.string,
+  stripeSkuId: PropTypes.string,
   quantity: PropTypes.number,
-}
+  customerCartId: PropTypes.string,
+  id: PropTypes.string,
+  createdAt: PropTypes.string,
+  sku: PropTypes.shape({
+    id: PropTypes.string,
+    object: PropTypes.string,
+    active: PropTypes.bool,
+    attributes: PropTypes.shape({
+      size: PropTypes.string,
+      pack: PropTypes.string,
+    }),
+    created: PropTypes.number,
+    currency: PropTypes.string,
+    image: PropTypes.any,
+    inventory: PropTypes.shape({
+      quantity: PropTypes.number,
+      type: PropTypes.string,
+      value: PropTypes.any,
+    }),
+    livemode: PropTypes.bool,
+    metadata: PropTypes.shape({}),
+    package_dimensions: PropTypes.any,
+    price: PropTypes.number,
+    product: PropTypes.shape({
+      id: PropTypes.string,
+      object: PropTypes.string,
+      active: PropTypes.bool,
+      attributes: PropTypes.arrayOf(PropTypes.string),
+      caption: PropTypes.string,
+      created: PropTypes.number,
+      deactivate_on: PropTypes.array,
+      description: PropTypes.string,
+      images: PropTypes.arrayOf(PropTypes.string),
+      livemode: PropTypes.bool,
+      metadata: PropTypes.shape({
+        shipping_fee_25_cl: PropTypes.string,
+        shipping_fee_1_l: PropTypes.string,
+      }),
+      name: PropTypes.string,
+      package_dimensions: PropTypes.any,
+      shippable: PropTypes.bool,
+      skus: PropTypes.shape({
+        object: PropTypes.string,
+        data: PropTypes.arrayOf(
+          PropTypes.shape({
+            id: PropTypes.string,
+            object: PropTypes.string,
+            active: PropTypes.bool,
+            attributes: PropTypes.shape({
+              size: PropTypes.string,
+              pack: PropTypes.string,
+            }),
+            created: PropTypes.number,
+            currency: PropTypes.string,
+            image: PropTypes.any,
+            inventory: PropTypes.shape({
+              quantity: PropTypes.number,
+              type: PropTypes.string,
+              value: PropTypes.any,
+            }),
+            livemode: PropTypes.bool,
+            metadata: PropTypes.shape({}),
+            package_dimensions: PropTypes.any,
+            price: PropTypes.number,
+            product: PropTypes.string,
+            updated: PropTypes.number,
+          })
+        ),
+        has_more: PropTypes.bool,
+        total_count: PropTypes.number,
+        url: PropTypes.string,
+      }),
+      type: PropTypes.string,
+      updated: PropTypes.number,
+      url: PropTypes.string,
+    }),
+    updated: PropTypes.number,
+  }),
+};
 
-export default CartRow
+export default CartRow;

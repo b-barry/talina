@@ -6,14 +6,13 @@ import CartPaymentInfo from './cart-payment-info'
 import CartRow from './cart-row'
 
 function CartList({ cart, onRemoveFromCart, onUpdateQuantity }) {
-  const count = sumCartQuantities(cart)
   return (
     <div className="w-full mt-4 mb-6 lg:mb-0 lg:w-2/3 px-4 flex flex-col">
       <div className="flex flex-col">
         <div className="mb-4 flex-grow flex flex-col bg-white border border-grey-lighter overflow-hidden">
           <div className="px-6 mb-2">
             <p className="text-black pt-4 font-bold text-2xl flex flex-wrap justify-between">
-              <span>Mon panier </span> <span> {count} articles </span>
+              <span>Mon panier </span> <span> {sumCartQuantities(cart)} articles </span>
             </p>
           </div>
           <ul className="list-reset px-6">

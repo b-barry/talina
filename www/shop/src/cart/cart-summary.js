@@ -46,6 +46,8 @@ function CartSummary({ subtotal, shippingFee, isShippingFree = false }) {
             </div>
           </div>
         </div>
+        <div>
+        </div>
         <div className="flex justify-between items-center mb-8">
           <div className="w-3/4 pl-6 flex items-center">
             <div className="w-full flex">
@@ -62,7 +64,7 @@ function CartSummary({ subtotal, shippingFee, isShippingFree = false }) {
         </div>
         <div className="flex justify-between items-center mb-8">
           <div className="w-full px-6 flex items-center">
-            <button className="w-full mx-auto px-4 py-2 uppercase font-bold text-xs text-white bg-black lg:text-black lg:bg-white border-2 border-black border-solid hover:text-white hover:bg-black">
+            <button className="w-full mx-auto px-4 py-2 uppercase font-bold text-xs text-white bg-black lg:text-black lg:bg-white border-2 border-black border-solid hover:text-black hover:bg-white">
               Passer commande
             </button>
           </div>
@@ -73,7 +75,7 @@ function CartSummary({ subtotal, shippingFee, isShippingFree = false }) {
 }
 
 CartSummary.propTypes = {
-  subtotal: PropTypes.string,
+  subtotal: PropTypes.number,
   shippingFee: PropTypes.string,
   isShippingFree: PropTypes.string,
 }
