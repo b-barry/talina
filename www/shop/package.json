@@ -17,10 +17,12 @@
     "gatsby-source-filesystem": "^2.0.12",
     "gatsby-source-stripe": "^2.1.2",
     "gatsby-transformer-sharp": "^2.1.9",
+    "places.js": "^1.15.1",
     "prop-types": "^15.6.2",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
-    "react-helmet": "^5.2.0"
+    "react-helmet": "^5.2.0",
+    "react-stripe-elements": "^2.0.1"
   },
   "keywords": [
     "gatsby"
@@ -34,6 +36,7 @@
     "test": "echo \"Write tests! -> https://gatsby.app/unit-testing\""
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.6.3",
     "prettier": "^1.15.2"
   },
   "repository": {
