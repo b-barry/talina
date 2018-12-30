@@ -4,11 +4,10 @@ export function flatten(arr = []) {
   return Array.prototype.concat(...arr);
 }
 
-export function groupBy(list = [], keyGetter = () => {
-}) {
-  return list.reduce(function (rv, x) {
-    const key = keyGetter(x)
-    ;(rv[key] = rv[key] || []).push(x);
+export function groupBy(list = [], keyGetter = () => {}) {
+  return list.reduce(function(rv, x) {
+    const key = keyGetter(x);
+    (rv[key] = rv[key] || []).push(x);
     return rv;
   }, {});
 }
@@ -38,3 +37,28 @@ export const isProductionEnvironment = () =>
 export const generateCartId = () => {
   return cuid();
 };
+
+export const getTotalPrice = (subtotal, shippingFee, isShippingFree = false) => {
+  let fee = 0
+  if (!isShippingFree) {
+    fee = shippingFee
+  }
+  return `${parseInt(subtotal, 10) + parseInt(fee, 10)}`
+}
+
+/**
+ * @param { Promise } promise
+ * @param { Object= } errorExt - Additional Information you can pass to the err object
+ * @return { Promise }
+ */
+export function to(promise, errorExt) {
+  return promise
+    .then(data => [null, data])
+    .catch(err => {
+      if (errorExt) {
+        Object.assign(err, errorExt);
+      }
+
+      return [err, undefined];
+    });
+}

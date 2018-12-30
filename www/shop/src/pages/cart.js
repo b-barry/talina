@@ -22,7 +22,7 @@ function CartPage() {
                   onUpdateQuantity={updateQuantity}
                   onRemoveFromCart={removeFromCart}
                 />
-                <CartSummary subtotal={sumCartPrices(cart)} shippingFee="490" />
+                <CartSummary subtotal={sumCartPrices(cart)} shippingFee="490"  itemsCount={cart.length}/>
               </>
             )
           }}

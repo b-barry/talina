@@ -2,55 +2,139 @@ import React, { Component } from 'react';
 import { injectStripe } from 'react-stripe-elements';
 import AccountStep from '../checkout/account-step';
 import PaymentStep from '../checkout/payment-step';
-import Stepper from '../checkout/stepper';
+import { If } from '../components/if';
+import { sumCartPrices, to } from '../utils';
+import AddressStep from './address-step';
+import CheckoutSummary from './checkout-summary';
+import DisabledStep from './disabled-step';
+
+export const CARD_TYPE = 'card';
+export const BANCONTACT_TYPE = 'bancontact';
 
 class CheckoutForm extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      paymentInfo: {
-        name: '',
-        address: '',
+      email: '',
+      deliveryAddressInfo: {
+        firstName: '',
+        lastName: '',
+        deliveryAddress: '',
       },
+      isProcessing: false,
     };
 
-    this.handlePaymentInfoChange = this.handlePaymentInfoChange.bind(this);
+    this.deliveryAddressInfoChange = this.deliveryAddressInfoChange.bind(this);
+    this.placeOrder = this.placeOrder.bind(this);
+    this.emailChange = this.emailChange.bind(this);
   }
 
-  handleSubmit = ev => {
-    ev.preventDefault();
-    if (this.props.stripe) {
-      this.props.stripe
-        .createToken()
-        .then(payload => console.log('[token]', payload));
-    } else {
+  async placeOrder(paymentType) {
+    if (!this.props.stripe) {
       console.log("Stripe.js hasn't loaded yet.");
+      return;
     }
-  };
+    this.setState({ isProcessing: true });
+    if (paymentType === CARD_TYPE) {
+      await this.processCard();
+      return;
+    }
+  }
 
-  handlePaymentInfoChange(e) {
-    console.log('handlePaymentInfoChange', e);
+  async processCard() {
+    const [err, payload] = await to(this.props.stripe.createToken());
+    this.setState({ isProcessing: false });
+    if (err) {
+      console.log("Stripe.js hasn't loaded yet.");
+      return;
+    }
+    console.log('payload', payload);
+  }
+
+  deliveryAddressInfoChange(e) {
     this.setState({
-      paymentInfo: {
-        ...this.state.paymentInfo,
+      deliveryAddressInfo: {
+        ...this.state.deliveryAddressInfo,
         [e.target.name]: e.target.value,
       },
     });
   }
 
+  emailChange(email) {
+    this.setState({
+      email,
+    });
+  }
+
+  isAccountStepDone() {
+    return !!this.state.email;
+  }
+
+  isAddressStepDone() {
+    const {
+      firstName,
+      deliveryAddress,
+      lastName,
+    } = this.state.deliveryAddressInfo;
+    return !!firstName && !!deliveryAddress && !!lastName;
+  }
+
+  getItemsFromCart(cart = []) {
+    return cart.map(({ id, quantity, sku: { price, product, attributes } }) => {
+      return {
+        id,
+        quantity,
+        price,
+        size: attributes.size,
+        pack: attributes.pack,
+        label: product.name,
+      };
+    });
+  }
+
   render() {
+    const { cart } = this.props;
     return (
-      <>
-        <Stepper />
-        <AccountStep />
-        <PaymentStep
-          value={this.state.paymentInfo}
-          amount={this.props.amount}
-          onInputChange={this.handlePaymentInfoChange}
-          onSubmit={this.handleSubmit}
+      <div className="flex flex-wrap justify-between mt-5 bg-grey-lighter">
+        <div className="w-full mt-4 mb-6 lg:mb-0 lg:w-2/3 px-4 flex flex-col">
+          <div className="flex flex-col">
+            <AccountStep
+              defaultEmail={this.state.email}
+              onSubmit={this.emailChange}
+            />
+            <If
+              condition={this.isAccountStepDone()}
+              then={
+                <AddressStep
+                  title={'Address Delivery'}
+                  value={this.state.deliveryAddressInfo}
+                  onInputChange={this.deliveryAddressInfoChange}
+                />
+              }
+              else={<DisabledStep title={'Address Delivery'} />}
+            />
+            <If
+              condition={this.isAddressStepDone()}
+              then={
+                <PaymentStep
+                  title={'Payment'}
+                  amount={this.props.amount}
+                  onSubmit={this.placeOrder}
+                  disabled={this.state.isProcessing}
+                />
+              }
+              else={<DisabledStep title={'Payment'} />}
+            />
+          </div>
+        </div>
+        <CheckoutSummary
+          items={this.getItemsFromCart(cart)}
+          subtotal={sumCartPrices(cart)}
+          shippingFee="490"
+          itemsCount={cart.length}
         />
-      </>
+      </div>
     );
   }
 }

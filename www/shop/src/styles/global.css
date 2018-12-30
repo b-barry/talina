@@ -1,25 +1,41 @@
-@import "stitches.css";
-@import "../../node_modules/@fortawesome/fontawesome-free/css/all.css";
-@import "font.css";
+@import 'stitches.css';
+@import '../../node_modules/@fortawesome/fontawesome-free/css/all.css';
+@import 'font.css';
 
 /**
     Missing tailwind css class
  */
 .appearance-none {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 .text-blue-darkest {
-    color: #12283A;
+  color: #12283a;
 }
 
 .pb-5 {
-    padding-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+.py-5 {
+  padding-bottom: 1.25rem;
+  padding-top: 1.25rem;
 }
 
 .pt-1 {
-    padding-top: 0.25rem;
+  padding-top: 0.25rem;
 }
 
+.visible {
+  visibility: visible;
+}
+.invisible {
+  visibility: hidden;
+}
+
+
+.text-red-light	{
+  color: #ef5753;
+}
