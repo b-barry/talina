@@ -3,7 +3,7 @@ import { injectStripe } from 'react-stripe-elements';
 import AccountStep from '../checkout/account-step';
 import PaymentStep from '../checkout/payment-step';
 import { If } from '../components/if';
-import {getTotalPrice, sumCartPrices, to} from '../utils';
+import { getTotalPrice, sumCartPrices, to } from '../utils';
 import AccountFilledStep from './account-filled-step';
 import AddressStep from './address-step';
 import CheckoutSummary from './checkout-summary';
@@ -44,13 +44,35 @@ class CheckoutForm extends Component {
   }
 
   async processCard() {
-    const [err, payload] = await to(this.props.stripe.createToken());
-    this.setState({ isProcessing: false });
-    if (err) {
+    const {
+      email,
+      deliveryAddressInfo: { firstName, lastName, deliveryAddress },
+    } = this.state;
+
+    const owner = {
+      name: `${firstName} ${lastName}`,
+      address: {
+        line1: deliveryAddress,
+        city: '',
+        postal_code: '',
+        country: '',
+      },
+      email: email,
+    };
+
+    const [err, payload] = await to(
+      this.props.stripe.createSource({
+        type: 'card',
+        owner,
+      })
+    );
+    if (err && payload.error) {
       console.log("Stripe.js hasn't loaded yet.");
       return;
     }
     console.log('payload', payload);
+
+    this.setState({ isProcessing: false });
   }
 
   deliveryAddressInfoChange(e) {
@@ -96,8 +118,8 @@ class CheckoutForm extends Component {
 
   render() {
     const { cart } = this.props;
-    const subTotal=sumCartPrices(cart);
-    const shippingFee="490";
+    const subTotal = sumCartPrices(cart);
+    const shippingFee = '490';
     return (
       <div className="flex flex-wrap justify-between mt-5 bg-grey-lighter">
         <div className="w-full mt-4 mb-6 lg:mb-0 lg:w-2/3 px-4 flex flex-col">
@@ -134,7 +156,7 @@ class CheckoutForm extends Component {
               then={
                 <PaymentStep
                   title={'Payment'}
-                  totalAmount={getTotalPrice(subTotal,shippingFee)}
+                  totalAmount={getTotalPrice(subTotal, shippingFee)}
                   onSubmit={this.placeOrder}
                   disabled={this.state.isProcessing}
                 />
