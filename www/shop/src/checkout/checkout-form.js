@@ -4,6 +4,7 @@ import AccountStep from '../checkout/account-step';
 import PaymentStep from '../checkout/payment-step';
 import { If } from '../components/if';
 import { sumCartPrices, to } from '../utils';
+import AccountFilledStep from './account-filled-step';
 import AddressStep from './address-step';
 import CheckoutSummary from './checkout-summary';
 import DisabledStep from './disabled-step';
@@ -99,10 +100,22 @@ class CheckoutForm extends Component {
       <div className="flex flex-wrap justify-between mt-5 bg-grey-lighter">
         <div className="w-full mt-4 mb-6 lg:mb-0 lg:w-2/3 px-4 flex flex-col">
           <div className="flex flex-col">
-            <AccountStep
-              defaultEmail={this.state.email}
-              onSubmit={this.emailChange}
+            <If
+              condition={!this.isAccountStepDone()}
+              then={
+                <AccountStep
+                  defaultEmail={this.state.email}
+                  onSubmit={this.emailChange}
+                />
+              }
+              else={
+                <AccountFilledStep
+                  email={this.state.email}
+                  onEdit={() => this.emailChange(null)}
+                />
+              }
             />
+
             <If
               condition={this.isAccountStepDone()}
               then={
