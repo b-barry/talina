@@ -3,7 +3,7 @@ import { injectStripe } from 'react-stripe-elements';
 import AccountStep from '../checkout/account-step';
 import PaymentStep from '../checkout/payment-step';
 import { If } from '../components/if';
-import { sumCartPrices, to } from '../utils';
+import {getTotalPrice, sumCartPrices, to} from '../utils';
 import AccountFilledStep from './account-filled-step';
 import AddressStep from './address-step';
 import CheckoutSummary from './checkout-summary';
@@ -96,6 +96,8 @@ class CheckoutForm extends Component {
 
   render() {
     const { cart } = this.props;
+    const subTotal=sumCartPrices(cart);
+    const shippingFee="490";
     return (
       <div className="flex flex-wrap justify-between mt-5 bg-grey-lighter">
         <div className="w-full mt-4 mb-6 lg:mb-0 lg:w-2/3 px-4 flex flex-col">
@@ -132,7 +134,7 @@ class CheckoutForm extends Component {
               then={
                 <PaymentStep
                   title={'Payment'}
-                  amount={this.props.amount}
+                  totalAmount={getTotalPrice(subTotal,shippingFee)}
                   onSubmit={this.placeOrder}
                   disabled={this.state.isProcessing}
                 />
@@ -143,8 +145,8 @@ class CheckoutForm extends Component {
         </div>
         <CheckoutSummary
           items={this.getItemsFromCart(cart)}
-          subtotal={sumCartPrices(cart)}
-          shippingFee="490"
+          subtotal={subTotal}
+          shippingFee={shippingFee}
           itemsCount={cart.length}
         />
       </div>

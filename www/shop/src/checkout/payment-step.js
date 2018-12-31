@@ -33,8 +33,7 @@ class PaymentStep extends Component {
   }
 
   render() {
-    let { amount, title, disabled } = this.props;
-    console.log('disabled', disabled);
+    let { totalAmount, title, disabled } = this.props;
     return (
       <div className="flex-grow flex flex-col bg-white border border-grey-lighter overflow-hidden mb-4">
         <div className="px-4 mb-2">
@@ -75,7 +74,7 @@ class PaymentStep extends Component {
                     onClick={this.handleSubmit}
                     className="w-full mx-auto px-4 py-2 uppercase font-bold text-xs text-white bg-black lg:text-black lg:bg-white border-2 border-black border-solid hover:text-black hover:bg-white"
                   >
-                    Payer {priceFormat(amount)} avec Bancontact
+                    Payer {priceFormat(totalAmount)} avec Bancontact
                   </button>
                 </div>
               </div>
@@ -94,7 +93,7 @@ class PaymentStep extends Component {
                     onClick={this.handleSubmit}
                     className="w-full mx-auto px-4 py-2 uppercase font-bold text-xs text-white bg-black lg:text-black lg:bg-white border-2 border-black border-solid hover:text-black hover:bg-white"
                   >
-                    Payer {priceFormat(amount)}
+                    Payer {priceFormat(totalAmount)}
                   </button>
                 </div>
               </div>
@@ -106,7 +105,7 @@ class PaymentStep extends Component {
   }
 }
 
-PaymentStep.propTypes = { amount: PropTypes.string };
+PaymentStep.propTypes = { totalAmount: PropTypes.string };
 
 PaymentStep.defaultProps = { amount: '0' };
 
