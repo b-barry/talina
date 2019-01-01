@@ -3,5 +3,12 @@
  *
  * See: https://www.gatsbyjs.org/docs/browser-apis/
  */
+import React from 'react';
 
-require('./src/styles/global.css')
+import { AppProvider } from './src/app-context';
+
+require('./src/styles/global.css');
+
+export const wrapRootElement = ({ element }) => (
+  <AppProvider>{element}</AppProvider>
+);
