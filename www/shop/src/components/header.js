@@ -1,6 +1,6 @@
 import { Link } from 'gatsby'
 import React from 'react'
-import { AppContext } from '../app-context'
+import { StoreContext } from '../store-context'
 import { sumCartQuantities } from '../utils'
 import CartButton from './cart-button'
 
@@ -34,11 +34,11 @@ const Header = () => {
           </li>
         </ul>
       </div>
-      <AppContext.Consumer>
+      <StoreContext.Consumer>
         {({ cart }) => {
           return <CartButton count={sumCartQuantities(cart)} />
         }}
-      </AppContext.Consumer>
+      </StoreContext.Consumer>
     </nav>
   )
 }

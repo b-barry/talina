@@ -1,6 +1,6 @@
 import { graphql, StaticQuery } from 'gatsby'
 import React, { Component } from 'react'
-import { AppContext } from '../app-context'
+import { StoreContext } from '../store-context'
 import Product from './product'
 
 const query = graphql`
@@ -56,6 +56,6 @@ class ProductList extends Component {
   }
 }
 
-ProductList.contextType = AppContext
+ProductList.contextType = StoreContext
 
 export default ProductList

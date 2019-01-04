@@ -1,5 +1,5 @@
 import React from 'react'
-import { AppContext } from '../app-context'
+import { StoreContext } from '../store-context'
 import CartList from '../cart/cart-list'
 import CartSummary from '../cart/cart-summary'
 
@@ -12,7 +12,7 @@ function CartPage() {
     <Layout>
       <SEO title="Cart" keywords={[`shop`, `talina`, `hubiscu`]} />
       <div className="flex flex-wrap justify-between mt-5 bg-grey-lighter">
-        <AppContext.Consumer>
+        <StoreContext.Consumer>
           {context => {
             const { cart, updateQuantity, removeFromCart } = context
             return (
@@ -26,7 +26,7 @@ function CartPage() {
               </>
             )
           }}
-        </AppContext.Consumer>
+        </StoreContext.Consumer>
       </div>
     </Layout>
   )

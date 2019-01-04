@@ -5,10 +5,11 @@
  */
 import React from 'react';
 
-import { AppProvider } from './src/app-context';
+import { StoreProvider } from './src/store-context';
+import {UserProvider} from './src/user-context';
 
 require('./src/styles/global.css');
 
 export const wrapRootElement = ({ element }) => (
-  <AppProvider>{element}</AppProvider>
+  <UserProvider>{<StoreProvider>{element}</StoreProvider>}</UserProvider>
 );

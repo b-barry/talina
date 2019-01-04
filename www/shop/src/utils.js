@@ -46,6 +46,10 @@ export const getTotalPrice = (subtotal, shippingFee, isShippingFree = false) => 
   return `${parseInt(subtotal, 10) + parseInt(fee, 10)}`
 }
 
+export const nope=()=>{};
+
+export const mb=p=>o=>p.map(c=>o=(o||{})[c])&&o
+
 /**
  * @param { Promise } promise
  * @param { Object= } errorExt - Additional Information you can pass to the err object

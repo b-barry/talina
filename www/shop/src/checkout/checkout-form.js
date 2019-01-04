@@ -3,7 +3,7 @@ import { injectStripe } from 'react-stripe-elements';
 import AccountStep from '../checkout/account-step';
 import PaymentStep from '../checkout/payment-step';
 import { If } from '../components/if';
-import { getTotalPrice, sumCartPrices, to } from '../utils';
+import { getTotalPrice, mb, sumCartPrices, to } from '../utils';
 import AccountFilledStep from './account-filled-step';
 import AddressStep from './address-step';
 import CheckoutSummary from './checkout-summary';
@@ -11,6 +11,15 @@ import DisabledStep from './disabled-step';
 
 export const CARD_TYPE = 'card';
 export const BANCONTACT_TYPE = 'bancontact';
+
+export const getEmailFromUserContext = mb(['data', 'idTokenPayload', 'email']);
+export const getPasswordlessCodeFromUserContext = mb([
+  'passwordless',
+  'err',
+  'code',
+]);
+
+const invalidUserPasswordErrorCode = 'invalid_user_password';
 
 class CheckoutForm extends Component {
   constructor(props) {
@@ -91,7 +100,7 @@ class CheckoutForm extends Component {
   }
 
   isAccountStepDone() {
-    return !!this.state.email;
+    return !!this.props.userContext.loggedIn;
   }
 
   isAddressStepDone() {
@@ -116,8 +125,16 @@ class CheckoutForm extends Component {
     });
   }
 
+  onCodeSubmit = (email, code) => {
+    this.props.userContext.passwordlessVerify(email, code, '/checkout');
+  };
+
   render() {
-    const { cart } = this.props;
+    const { cart, userContext } = this.props;
+    const passwordlessCodeError = getPasswordlessCodeFromUserContext(
+      userContext
+    );
+
     const subTotal = sumCartPrices(cart);
     const shippingFee = '490';
     return (
@@ -128,14 +145,24 @@ class CheckoutForm extends Component {
               condition={!this.isAccountStepDone()}
               then={
                 <AccountStep
-                  defaultEmail={this.state.email}
-                  onSubmit={this.emailChange}
-                />
+                  onEmailSubmit={userContext.passwordlessStart}
+                  onCodeSubmit={this.onCodeSubmit}
+                >
+                  <If
+                    condition={
+                      passwordlessCodeError === invalidUserPasswordErrorCode
+                    }
+                    then={
+                      <span className="pt-1 px-3 text-sm font-semibold text-red-light ">
+                        Veuillez entrer un valid code
+                      </span>
+                    }
+                  />
+                </AccountStep>
               }
               else={
                 <AccountFilledStep
-                  email={this.state.email}
-                  onEdit={() => this.emailChange(null)}
+                  email={getEmailFromUserContext(userContext)}
                 />
               }
             />
