@@ -6,7 +6,7 @@
 import React from 'react';
 
 import { StoreProvider } from './src/store-context';
-import {UserProvider} from './src/user-context';
+import { UserProvider } from './src/user-context';
 
 require('./src/styles/global.css');
 
