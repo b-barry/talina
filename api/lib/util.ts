@@ -1,3 +1,5 @@
+import {createError, HttpErrorResponse, json} from './http/micro';
+
 export const responseJson = (res, body = {}, status = 200) => {
   const response = {
     statusCode: status,
@@ -5,6 +7,8 @@ export const responseJson = (res, body = {}, status = 200) => {
       'Content-Type': 'application/json',
       // TODO: setup correct cors
       'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': '*',
+      'Access-Control-Allow-Headers': '*',
     },
     body: JSON.stringify(body),
   };
@@ -13,22 +17,32 @@ export const responseJson = (res, body = {}, status = 200) => {
   res.write(response.body);
   res.end();
 };
-
-const createError = (code, message, original) => {
-  const err: Error & { statusCode?, originalError? } = new Error(message);
-
-  err.statusCode = code;
-  err.originalError = original;
-
-  return err;
+export const responseError = (
+  res,
+  { statusCode, message }: HttpErrorResponse
+) => {
+  res.writeHead(statusCode || 400, {
+    'Content-Type': 'application/json',
+    // TODO: setup correct cors
+    'Access-Control-Allow-Origin': '*',
+  });
+  res.write(JSON.stringify({ statusCode, message }));
+  res.end();
 };
 
-export const parseJSON = str => {
-  try {
-    return JSON.parse(str);
-  } catch (err) {
-    throw createError(400, 'Invalid JSON', err);
+
+export const identity = v => v;
+
+export const isPost = async (req: Request, bodyValidationFn = identity) => {
+
+  if (req.method.toLowerCase() !== 'post') {
+    throw createError(400, 'POST request is required');
   }
+  return json(req);
+};
+
+export const isOptions = (req: Request) => {
+  return req.method.toLowerCase() === 'OPTIONS'.toLowerCase();
 };
 
 /**

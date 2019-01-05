@@ -1,13 +1,16 @@
 import React from 'react';
 import {
   addToCart,
+  createOrder,
   fetchCartItems,
+  getOrderById,
   removeFromCart,
   updateQuantity,
 } from './api';
-import { generateCartId } from './utils';
+import { generateCartId, to } from './utils';
 
 export const CART_ID_KEY = 'talina-cart-id';
+export const ORDER_ID_KEY = 'talina-order-id';
 
 export const getPersistedCartIdFromLocalStorage = () => {
   return localStorage.getItem(CART_ID_KEY);
@@ -17,19 +20,29 @@ export const persistCartIdToLocalStorage = cartId => {
   localStorage.setItem(CART_ID_KEY, cartId);
 };
 
+export const getPersistedOrderIdFromLocalStorage = () => {
+  return localStorage.getItem(ORDER_ID_KEY);
+};
+
+export const persistOrderIdToLocalStorage = id => {
+  localStorage.setItem(ORDER_ID_KEY, id);
+};
+
 export const StoreContext = React.createContext({
   cart: [],
-  addToCart: sku => {},
-  updateQuantity: (skuId, quantity) => {},
-  removeFromCart: skuId => {},
+  addToCart: async sku => {},
+  updateQuantity: async (skuId, quantity) => {},
+  removeFromCart: async skuId => {},
+  createOrder: async () => {},
+  order: null,
+  isLoading: false,
+  isLoaded: false,
+  err: null,
 });
 
 class Provider extends React.Component {
   constructor(props) {
     super(props);
-    this.addToCart = this.addToCart.bind(this);
-    this.updateQuantity = this.updateQuantity.bind(this);
-    this.removeFromCart = this.removeFromCart.bind(this);
 
     this.state = {
       cartId: this.getCartId(),
@@ -37,6 +50,11 @@ class Provider extends React.Component {
       addToCart: this.addToCart,
       updateQuantity: this.updateQuantity,
       removeFromCart: this.removeFromCart,
+      createOrder: this.createOrder,
+      order: null,
+      isLoading: false,
+      isLoaded: false,
+      err: null,
     };
   }
 
@@ -62,7 +80,7 @@ class Provider extends React.Component {
     return id;
   }
 
-  async addToCart(sku) {
+  addToCart = async sku => {
     const record = await addToCart(this.state.cartId, sku.id);
     this.setState(state => {
       return {
@@ -72,9 +90,9 @@ class Provider extends React.Component {
           .concat([record]),
       };
     });
-  }
+  };
 
-  async updateQuantity(skuId, quantity) {
+  updateQuantity = async (skuId, quantity) => {
     const record = await updateQuantity(this.state.cartId, skuId, quantity);
     this.setState(state => {
       let cart = [...state.cart];
@@ -86,9 +104,9 @@ class Provider extends React.Component {
         cart,
       };
     });
-  }
+  };
 
-  async removeFromCart(skuId) {
+  removeFromCart = async skuId => {
     await removeFromCart(this.state.cartId, skuId);
 
     this.setState(state => {
@@ -97,7 +115,21 @@ class Provider extends React.Component {
         cart: state.cart.filter(item => item.sku.id !== skuId),
       };
     });
-  }
+  };
+
+  createOrder = async (cartId = this.state.cartId, email, shipping) => {
+    const [err, order] = await to(createOrder(cartId, email, shipping));
+    if (err) {
+      throw err;
+    }
+
+    persistOrderIdToLocalStorage(order.id);
+    return order;
+  };
+
+  getOrderById = async id => {
+    return getOrderById(id);
+  };
 }
 
 export const StoreProvider = Provider;

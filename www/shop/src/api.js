@@ -1,4 +1,5 @@
-import { isProductionEnvironment } from './utils';
+import {isProductionEnvironment} from './utils';
+import ky from 'ky';
 
 const API_BASE_URL = process.env.api_base_url;
 
@@ -40,4 +41,24 @@ export const removeFromCart = async (cartId, skuId) => {
   );
 
   return r.json();
+};
+
+export const getOrderById = async (id) => {
+  return ky.get(
+    `${API_BASE_URL}/order/get-by-id.js?id=${id}`
+  ).json();
+};
+
+export const createOrder = async (cartId, email, shipping, createIntent = false) => {
+  return ky.post(
+    `${API_BASE_URL}/order/create.js`,
+    {
+      json: {
+        cartId,
+        email,
+        shipping,
+        createIntent
+      },
+    }
+  ).json();
 };

@@ -1,5 +1,5 @@
-import { base } from './config';
-import { AirtableApiResponse, AirtableCartItems, AirtableView } from './symbol';
+import {base} from './config';
+import {AirtableApiResponse, AirtableCartItems, AirtableView} from './symbol';
 
 const cartItemsTable = base('CartItems');
 
@@ -73,6 +73,9 @@ export const updateQuantity = async (
     | undefined = await findOneBy(
     and(eqCustomerCartId(cartId), eqStripeSkuId(skuId))
   );
+  if (quantity <= 0) {
+    quantity = 1;
+  }
 
   if (record) {
     return cartItemsTable.update(record.fields.id, {

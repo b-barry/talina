@@ -26,13 +26,16 @@ class CheckoutForm extends Component {
     super(props);
 
     this.state = {
-      email: '',
       deliveryAddressInfo: {
         firstName: '',
         lastName: '',
         deliveryAddress: '',
       },
       isProcessing: false,
+      paymentProcess: {
+        orderId: null,
+        sourceId: null,
+      },
     };
 
     this.deliveryAddressInfoChange = this.deliveryAddressInfoChange.bind(this);
@@ -46,19 +49,30 @@ class CheckoutForm extends Component {
       return;
     }
     this.setState({ isProcessing: true });
-    if (paymentType === CARD_TYPE) {
-      await this.processCard();
-      return;
-    }
+    await this.createOrder()
+    // if (paymentType === CARD_TYPE) {
+    //   await this.processCard();
+    //   return;
+    // }
   }
 
-  async processCard() {
-    const {
-      email,
-      deliveryAddressInfo: { firstName, lastName, deliveryAddress },
-    } = this.state;
+  async createOrder() {
+    const { cartId, createOrder } = this.props.storeContext;
+    const { email, ...shipping } = this.getShippingInfo(this.state);
+    const [err, order] = await to(createOrder(cartId, email, shipping));
+    if (err) {
+      console.log('createOrder::error', err);
+      return;
+    }
+    console.log('order', order)
+  }
 
-    const owner = {
+  getShippingInfo(state) {
+    const {
+      deliveryAddressInfo: { firstName, lastName, deliveryAddress },
+    } = state;
+
+    return {
       name: `${firstName} ${lastName}`,
       address: {
         line1: deliveryAddress,
@@ -66,8 +80,12 @@ class CheckoutForm extends Component {
         postal_code: '',
         country: '',
       },
-      email: email,
+      email: getEmailFromUserContext(this.props.userContext),
     };
+  }
+
+  async processCard() {
+    const owner = this.getShippingInfo(this.state);
 
     const [err, payload] = await to(
       this.props.stripe.createSource({
@@ -130,7 +148,15 @@ class CheckoutForm extends Component {
   };
 
   render() {
-    const { cart, userContext } = this.props;
+    const { isProcessing } = this.state;
+    return !isProcessing ? this.renderForm() : this.renderPaymentProcessing();
+  }
+
+  renderForm() {
+    const {
+      storeContext: { cart },
+      userContext,
+    } = this.props;
     const passwordlessCodeError = getPasswordlessCodeFromUserContext(
       userContext
     );
@@ -198,6 +224,14 @@ class CheckoutForm extends Component {
           shippingFee={shippingFee}
           itemsCount={cart.length}
         />
+      </div>
+    );
+  }
+
+  renderPaymentProcessing() {
+    return (
+      <div className="flex flex-wrap justify-between mt-5 bg-grey-lighter">
+        <p>Payment Processing</p>
       </div>
     );
   }

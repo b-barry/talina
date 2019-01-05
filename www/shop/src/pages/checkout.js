@@ -15,11 +15,10 @@ function CheckoutPage() {
         {userContext => (
           <StoreContext.Consumer>
             {storeContext => {
-              const { cart } = storeContext;
               return (
                 <StripeProvider apiKey={process.env.STRIPE_PAYEMENT}>
                   <Elements>
-                    <CheckoutForm cart={cart} userContext={userContext}/>
+                    <CheckoutForm storeContext={storeContext} userContext={userContext}/>
                   </Elements>
                 </StripeProvider>
               );
