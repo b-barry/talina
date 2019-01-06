@@ -1,5 +1,5 @@
-import {base} from './config';
-import {AirtableApiResponse, AirtableCartItems, AirtableView} from './symbol';
+import { base } from './config';
+import { AirtableApiResponse, AirtableCartItems, AirtableView } from './symbol';
 
 const cartItemsTable = base('CartItems');
 

@@ -1,4 +1,4 @@
-import {orders} from 'stripe';
+import {charges, orders} from 'stripe';
 
 export interface CreateOrder {
   items: OrderItems[];
@@ -7,11 +7,37 @@ export interface CreateOrder {
   currency?;
 }
 
-export enum OrderStatus {
-  CREATED = 'created',
+export interface UpdateOrder  {
+  metadata: { status: string }
 }
 
+export interface CreateCharge {
+  sourceId: string;
+  idempotencyKey: string;
+  currency: string;
+  email: string;
+  amount: string | number;
+}
+
+export enum OrderStatus {
+  CREATED = 'created',
+  PENDING = 'pending',
+  PAID = 'paid',
+  FAILED = 'failed',
+}
+
+export enum SourceStatus {
+  CHARGEABLE = 'chargeable',
+}
+export enum ChargeStatus {
+  SUCCEEDED = 'succeeded',
+}
+
+
 export interface Order extends orders.IOrder {
+}
+
+export interface Charge extends charges.ICharge {
 }
 
 export interface OrderItems {

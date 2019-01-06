@@ -1,4 +1,4 @@
-import {createError, HttpErrorResponse, json} from './http/micro';
+import { createError, HttpErrorResponse, json } from './http/micro';
 
 export const responseJson = (res, body = {}, status = 200) => {
   const response = {
@@ -30,11 +30,9 @@ export const responseError = (
   res.end();
 };
 
-
 export const identity = v => v;
 
 export const isPost = async (req: Request, bodyValidationFn = identity) => {
-
   if (req.method.toLowerCase() !== 'post') {
     throw createError(400, 'POST request is required');
   }

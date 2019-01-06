@@ -33,38 +33,14 @@ class CheckoutForm extends Component {
       },
       isProcessing: false,
       paymentProcess: {
-        orderId: null,
-        sourceId: null,
+        order: null,
+        source: null,
       },
     };
 
     this.deliveryAddressInfoChange = this.deliveryAddressInfoChange.bind(this);
     this.placeOrder = this.placeOrder.bind(this);
     this.emailChange = this.emailChange.bind(this);
-  }
-
-  async placeOrder(paymentType) {
-    if (!this.props.stripe) {
-      console.log("Stripe.js hasn't loaded yet.");
-      return;
-    }
-    this.setState({ isProcessing: true });
-    await this.createOrder()
-    // if (paymentType === CARD_TYPE) {
-    //   await this.processCard();
-    //   return;
-    // }
-  }
-
-  async createOrder() {
-    const { cartId, createOrder } = this.props.storeContext;
-    const { email, ...shipping } = this.getShippingInfo(this.state);
-    const [err, order] = await to(createOrder(cartId, email, shipping));
-    if (err) {
-      console.log('createOrder::error', err);
-      return;
-    }
-    console.log('order', order)
   }
 
   getShippingInfo(state) {
@@ -84,7 +60,89 @@ class CheckoutForm extends Component {
     };
   }
 
-  async processCard() {
+  async placeOrder(paymentType) {
+    if (!this.props.stripe) {
+      console.log("Stripe.js hasn't loaded yet.");
+      return;
+    }
+
+    if (paymentType === CARD_TYPE) {
+      const [err, payload] = await to(this.processCardSource());
+      if (err) {
+        console.log('Error::placeOrder::processCardSource', err);
+        return;
+      }
+
+      this.setState(state => ({
+        ...state,
+        paymentProcess: { ...state.paymentProcess, source: payload.source },
+      }));
+    }
+
+    this.setState({ isProcessing: true });
+
+    await this.createOrder();
+
+    console.log('this.state', this.state);
+
+    await this.handleOrder(
+      this.state.paymentProcess.order,
+      this.state.paymentProcess.source
+    );
+  }
+
+  async createOrder() {
+    const { cartId, createOrder } = this.props.storeContext;
+    const { email, ...shipping } = this.getShippingInfo(this.state);
+    const [err, order] = await to(createOrder(cartId, email, shipping));
+    if (err) {
+      console.log('createOrder::error', err);
+      return;
+    }
+    console.log('order', order);
+
+    this.setState(state => ({
+      ...state,
+      paymentProcess: { ...state.paymentProcess, order },
+    }));
+  }
+
+  async handleOrder(order, source) {
+    switch (order.metadata.status) {
+      case 'created':
+        switch (source.status) {
+          case 'chargeable':
+            const response = await this.props.storeContext.payOrder(
+              order,
+              source
+            );
+            //await this.handleOrder(response.order, response.source);
+            break;
+          case 'failed':
+          case 'canceled':
+            // Authentication failed, offer to select another payment method.
+            break;
+          default:
+            // Order is received, pending payment confirmation.
+            break;
+        }
+        break;
+
+      case 'pending':
+        // Success! Now waiting for payment confirmation. Update the interface to display the confirmation screen.
+        // Update the note about receipt and shipping (the payment is not yet confirmed by the bank).
+        break;
+
+      case 'failed':
+        // Payment for the order has failed.
+        break;
+
+      case 'paid':
+        break;
+    }
+  }
+
+  async processCardSource() {
     const owner = this.getShippingInfo(this.state);
 
     const [err, payload] = await to(
@@ -93,13 +151,11 @@ class CheckoutForm extends Component {
         owner,
       })
     );
-    if (err && payload.error) {
-      console.log("Stripe.js hasn't loaded yet.");
-      return;
+    if (err || payload.error) {
+      console.log('processCardSource', err || payload.error);
+      throw err || payload.error;
     }
-    console.log('payload', payload);
-
-    this.setState({ isProcessing: false });
+    return payload;
   }
 
   deliveryAddressInfoChange(e) {

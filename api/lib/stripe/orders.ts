@@ -1,6 +1,11 @@
 import { stripe } from './config';
 import { orders } from 'stripe';
-import { CreateOrder, OrderStatus } from '../../order/symbol';
+import {
+  CreateOrder,
+  Order,
+  OrderStatus,
+  UpdateOrder,
+} from '../../order/symbol';
 
 export const getById = (id: string): Promise<orders.IOrder> => {
   return stripe.orders.retrieve(id);
@@ -21,6 +26,12 @@ export const create = ({
       status: OrderStatus.CREATED,
     },
   };
-  console.log('order::create::data', JSON.stringify(data, null, 1));
   return stripe.orders.create(data);
+};
+
+export const update = async (
+  orderId: string,
+  properties: UpdateOrder
+): Promise<Order> => {
+  return stripe.orders.update(orderId, properties);
 };

@@ -1,5 +1,5 @@
-import {isProductionEnvironment} from './utils';
 import ky from 'ky';
+import {isProductionEnvironment} from './utils';
 
 const API_BASE_URL = process.env.api_base_url;
 
@@ -58,6 +58,19 @@ export const createOrder = async (cartId, email, shipping, createIntent = false)
         email,
         shipping,
         createIntent
+      },
+    }
+  ).json();
+};
+
+
+export const payOrder = async (order, source) => {
+  return ky.post(
+    `${API_BASE_URL}/order/pay.js`,
+    {
+      json: {
+        orderId: order.id,
+        source
       },
     }
   ).json();

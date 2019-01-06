@@ -115,6 +115,5 @@ export const text = (req, { limit = '1mb', encoding = 'utf-8' } = {}) =>
 
 export const json = (req, opts = { limit: '1mb', encoding: 'utf-8' }) =>
   text(req, opts).then(body => {
-    console.log('body::string', body)
-    return parseJSON(body)
+    return parseJSON(body);
   });

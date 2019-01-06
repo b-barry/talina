@@ -3,7 +3,7 @@ import {
   addToCart,
   createOrder,
   fetchCartItems,
-  getOrderById,
+  getOrderById, payOrder,
   removeFromCart,
   updateQuantity,
 } from './api';
@@ -34,6 +34,7 @@ export const StoreContext = React.createContext({
   updateQuantity: async (skuId, quantity) => {},
   removeFromCart: async skuId => {},
   createOrder: async () => {},
+  payOrder: async () => {},
   order: null,
   isLoading: false,
   isLoaded: false,
@@ -51,6 +52,7 @@ class Provider extends React.Component {
       updateQuantity: this.updateQuantity,
       removeFromCart: this.removeFromCart,
       createOrder: this.createOrder,
+      payOrder: this.payOrder,
       order: null,
       isLoading: false,
       isLoaded: false,
@@ -125,6 +127,10 @@ class Provider extends React.Component {
 
     persistOrderIdToLocalStorage(order.id);
     return order;
+  };
+
+  payOrder = async (order, source) => {
+   return payOrder(order,source)
   };
 
   getOrderById = async id => {
