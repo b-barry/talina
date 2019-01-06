@@ -32,8 +32,8 @@ export const responseError = (
 
 export const identity = v => v;
 
-export const isPost = async (req: Request, bodyValidationFn = identity) => {
-  if (req.method.toLowerCase() !== 'post') {
+export const isPost = async (req: Request) => {
+  if (!isPostRequest(req)) {
     throw createError(400, 'POST request is required');
   }
   return json(req);
@@ -41,6 +41,9 @@ export const isPost = async (req: Request, bodyValidationFn = identity) => {
 
 export const isOptions = (req: Request) => {
   return req.method.toLowerCase() === 'OPTIONS'.toLowerCase();
+};
+export const isPostRequest = (req: Request) => {
+  return req.method.toLowerCase() === 'post'.toLowerCase();
 };
 
 /**

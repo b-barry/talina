@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
-import { injectStripe } from 'react-stripe-elements';
+import {navigate} from '@reach/router';
+import React, {Component} from 'react';
+import {injectStripe} from 'react-stripe-elements';
 import AccountStep from '../checkout/account-step';
 import PaymentStep from '../checkout/payment-step';
-import { If } from '../components/if';
-import { getTotalPrice, mb, sumCartPrices, to } from '../utils';
+import {If} from '../components/if';
+import {getPersistedOrderIdFromLocalStorage, persistOrderIdToLocalStorage,} from '../store-context';
+import {getTotalPrice, mb, sumCartPrices, to} from '../utils';
 import AccountFilledStep from './account-filled-step';
 import AddressStep from './address-step';
 import CheckoutSummary from './checkout-summary';
@@ -11,6 +13,7 @@ import DisabledStep from './disabled-step';
 
 export const CARD_TYPE = 'card';
 export const BANCONTACT_TYPE = 'bancontact';
+const shippingFee = '490';
 
 export const getEmailFromUserContext = mb(['data', 'idTokenPayload', 'email']);
 export const getPasswordlessCodeFromUserContext = mb([
@@ -43,9 +46,19 @@ class CheckoutForm extends Component {
     this.emailChange = this.emailChange.bind(this);
   }
 
+  async componentDidMount() {
+    const orderId = getPersistedOrderIdFromLocalStorage();
+    if (!(orderId && this.props.location.search.includes('source'))) {
+      return;
+    }
+
+    this.setState({isProcessing: true});
+    await this.pollOrderStatus(orderId);
+  }
+
   getShippingInfo(state) {
     const {
-      deliveryAddressInfo: { firstName, lastName, deliveryAddress },
+      deliveryAddressInfo: {firstName, lastName, deliveryAddress},
     } = state;
 
     return {
@@ -62,7 +75,7 @@ class CheckoutForm extends Component {
 
   async placeOrder(paymentType) {
     if (!this.props.stripe) {
-      console.log("Stripe.js hasn't loaded yet.");
+      console.log('Stripe.js hasn\'t loaded yet.');
       return;
     }
 
@@ -75,25 +88,26 @@ class CheckoutForm extends Component {
 
       this.setState(state => ({
         ...state,
-        paymentProcess: { ...state.paymentProcess, source: payload.source },
+        paymentProcess: {...state.paymentProcess, source: payload.source},
       }));
-    }
 
-    this.setState({ isProcessing: true });
+      return;
+    }
 
     await this.createOrder();
 
-    console.log('this.state', this.state);
+    const [err, payload] = await to(this.processBancontactSource());
+    if (err) {
+      console.log('Error::placeOrder::processBancontactSource', err);
+      return;
+    }
 
-    await this.handleOrder(
-      this.state.paymentProcess.order,
-      this.state.paymentProcess.source
-    );
+    await this.handleOrder(this.state.paymentProcess.order, payload.source);
   }
 
   async createOrder() {
-    const { cartId, createOrder } = this.props.storeContext;
-    const { email, ...shipping } = this.getShippingInfo(this.state);
+    const {cartId, createOrder} = this.props.storeContext;
+    const {email, ...shipping} = this.getShippingInfo(this.state);
     const [err, order] = await to(createOrder(cartId, email, shipping));
     if (err) {
       console.log('createOrder::error', err);
@@ -103,11 +117,11 @@ class CheckoutForm extends Component {
 
     this.setState(state => ({
       ...state,
-      paymentProcess: { ...state.paymentProcess, order },
+      paymentProcess: {...state.paymentProcess, order},
     }));
   }
 
-  async handleOrder(order, source) {
+  handleOrder = async (order, source) => {
     switch (order.metadata.status) {
       case 'created':
         switch (source.status) {
@@ -116,7 +130,18 @@ class CheckoutForm extends Component {
               order,
               source
             );
-            //await this.handleOrder(response.order, response.source);
+            await this.handleOrder(response.order, response.source);
+            break;
+          case 'pending':
+            switch (source.flow) {
+              case 'redirect':
+                // Immediately redirect the customer.
+                navigate(source.redirect.url);
+                break;
+              default:
+                // Order is received, pending payment confirmation.
+                break;
+            }
             break;
           case 'failed':
           case 'canceled':
@@ -134,13 +159,24 @@ class CheckoutForm extends Component {
         break;
 
       case 'failed':
-        // Payment for the order has failed.
+        // Failed! Payment failded. Update the interface to display the error screen.
+        console.log(
+          'Order::paid',
+          'Failed! Payment failded. Update the interface to display the error screen.'
+        );
+
         break;
 
       case 'paid':
+        // Success! Payment is confirmed. Update the interface to display the confirmation screen.
+        console.log(
+          'Order::paid',
+          'Success! Payment is confirmed. Update the interface to display the confirmation screen.'
+        );
+        persistOrderIdToLocalStorage(null);
         break;
     }
-  }
+  };
 
   async processCardSource() {
     const owner = this.getShippingInfo(this.state);
@@ -157,6 +193,83 @@ class CheckoutForm extends Component {
     }
     return payload;
   }
+
+  async processBancontactSource() {
+    const {
+      deliveryAddressInfo: {firstName, lastName},
+    } = this.state;
+
+    const data = {
+      type: 'bancontact',
+      amount: parseInt(
+        getTotalPrice(sumCartPrices(this.props.storeContext.cart), shippingFee),
+        10
+      ),
+      currency: 'eur',
+      owner: {
+        name: `${firstName} ${lastName}`,
+      },
+      redirect: {
+        return_url: this.props.location.href,
+      },
+      metadata: {
+        order: this.state.paymentProcess.order.id,
+      },
+    };
+
+    const [err, payload] = await to(this.props.stripe.createSource(data));
+    if (err || payload.error) {
+      console.log('processBancontactSource', err || payload.error);
+      throw err || payload.error;
+    }
+    return payload;
+  }
+
+  pollOrderStatus = async (
+    orderId,
+    timeout = 30000,
+    interval = 500,
+    start = null
+  ) => {
+    start = start ? start : Date.now();
+    const endStates = ['paid', 'failed'];
+    // Retrieve the latest order status.
+    const [getOrderByIdError, order] = await to(this.props.storeContext.getOrderById(orderId));
+    if (getOrderByIdError) {
+      // TODO: handle error redirection
+      this.setState(state => ({
+        ...state,
+        paymentProcess: {...state.paymentProcess, err: getOrderByIdError},
+      }));
+      return;
+    }
+    this.setState(state => ({
+      ...state,
+      paymentProcess: {...state.paymentProcess, err: null, order},
+    }));
+
+    await this.handleOrder(order, {status: null});
+    if (
+      !endStates.includes(order.metadata.status) &&
+      Date.now() < start + timeout
+    ) {
+
+      // Not done yet. Let's wait and check again.
+      setTimeout(
+        this.pollOrderStatus,
+        interval,
+        orderId,
+        timeout,
+        interval,
+        start
+      );
+    } else {
+      if (!endStates.includes(order.metadata.status)) {
+        // Status has not changed yet. Let's time out.
+        console.warn(new Error('Polling timed out.'));
+      }
+    }
+  };
 
   deliveryAddressInfoChange(e) {
     this.setState({
@@ -187,7 +300,7 @@ class CheckoutForm extends Component {
   }
 
   getItemsFromCart(cart = []) {
-    return cart.map(({ id, quantity, sku: { price, product, attributes } }) => {
+    return cart.map(({id, quantity, sku: {price, product, attributes}}) => {
       return {
         id,
         quantity,
@@ -204,13 +317,13 @@ class CheckoutForm extends Component {
   };
 
   render() {
-    const { isProcessing } = this.state;
+    const {isProcessing} = this.state;
     return !isProcessing ? this.renderForm() : this.renderPaymentProcessing();
   }
 
   renderForm() {
     const {
-      storeContext: { cart },
+      storeContext: {cart},
       userContext,
     } = this.props;
     const passwordlessCodeError = getPasswordlessCodeFromUserContext(
@@ -218,7 +331,6 @@ class CheckoutForm extends Component {
     );
 
     const subTotal = sumCartPrices(cart);
-    const shippingFee = '490';
     return (
       <div className="flex flex-wrap justify-between mt-5 bg-grey-lighter">
         <div className="w-full mt-4 mb-6 lg:mb-0 lg:w-2/3 px-4 flex flex-col">
@@ -258,7 +370,7 @@ class CheckoutForm extends Component {
                   onInputChange={this.deliveryAddressInfoChange}
                 />
               }
-              else={<DisabledStep title={'Address Delivery'} />}
+              else={<DisabledStep title={'Address Delivery'}/>}
             />
             <If
               condition={this.isAddressStepDone()}
@@ -270,7 +382,7 @@ class CheckoutForm extends Component {
                   disabled={this.state.isProcessing}
                 />
               }
-              else={<DisabledStep title={'Payment'} />}
+              else={<DisabledStep title={'Payment'}/>}
             />
           </div>
         </div>

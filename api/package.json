@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "parcel watch **/*.ts --target node --bundle-node-modules",
+    "dev": "parcel watch ****/**.ts --target node --bundle-node-modules",
     "dev:api": "dotenv -e \".env.development\"  now-we-test serve ",
-    "build": "parcel build **/*.ts --target node --bundle-node-modules",
+    "build": "parcel build ****/**.ts --target node --bundle-node-modules",
     "deploy": "npm run build && now | now alias $1 talina",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
