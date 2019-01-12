@@ -2,7 +2,7 @@ import * as PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { CardElement } from 'react-stripe-elements';
 import { priceFormat } from '../utils';
-import { BANCONTACT_TYPE, CARD_TYPE } from './checkout-form';
+import {BANCONTACT_TYPE, CARD_TYPE} from './constant';
 
 const active = 'border-b-2 border-black -mb-4';
 const inactive = 'text-grey-dark hover:text-black';

@@ -1,7 +1,7 @@
 import { Location } from '@reach/router';
 import React from 'react';
 import { Elements, StripeProvider } from 'react-stripe-elements';
-import CheckoutForm from '../checkout/checkout-form';
+import CheckoutContainer from '../checkout/checkout.container';
 
 import Layout from '../components/layout';
 import SEO from '../components/seo';
@@ -20,7 +20,7 @@ function CheckoutPage() {
                 {({location}) => (
                   <StripeProvider apiKey={process.env.STRIPE_PAYEMENT}>
                     <Elements>
-                      <CheckoutForm
+                      <CheckoutContainer
                         location={location}
                         storeContext={storeContext}
                         userContext={userContext}

@@ -1,10 +1,19 @@
-import {WebAuth} from 'auth0-js';
+import { WebAuth } from 'auth0-js';
 import React from 'react';
-import {nope} from './utils';
+import { mb, nope } from './utils';
 
 const talinaRedirectUrlAfterAuth = 'talina-redirect-url-after-auth';
-export const setRedirectedUrl = (url) => localStorage.setItem(talinaRedirectUrlAfterAuth, url);
+export const setRedirectedUrl = url =>
+  localStorage.setItem(talinaRedirectUrlAfterAuth, url);
 const getRedirectedUrl = () => localStorage.getItem(talinaRedirectUrlAfterAuth);
+
+export const getEmailFromUserContext = mb(['data', 'idTokenPayload', 'email']);
+export const getPasswordlessCodeFromUserContext = mb([
+  'passwordless',
+  'err',
+  'code',
+]);
+export const invalidUserPasswordErrorCode = 'invalid_user_password';
 
 export const defaultUserContext = {
   loggedIn: false,
@@ -32,10 +41,10 @@ class Provider extends React.Component {
     super(props);
 
     this.webAuth = new WebAuth({
+      ...defaultAuthOptions,
       clientID: process.env.auth0_clientId,
       domain: process.env.auth0_domain,
       redirectUri: process.env.auth0_redirectUri,
-      ...defaultAuthOptions,
     });
 
     this.state = {
@@ -85,7 +94,6 @@ class Provider extends React.Component {
         verificationCode: code,
       },
       (err, res) => {
-        console.log('err',err);
         this.setState(state => ({
           ...state,
           passwordless: {
@@ -97,30 +105,31 @@ class Provider extends React.Component {
     );
   };
 
-  onLogin = (cb) => {
+  onLogin = cb => {
     this.webAuth.parseHash((err, res) => {
       if (err) {
-        this.setState({
+        return this.setState({
           loggedIn: false,
           data: null,
           err,
         });
-        return;
       }
-      this.setState(state => ({
-        ...state,
-        loggedIn: true,
-        data: {...state.data, ...res},
-        err: null,
-      }));
-      cb(err, getRedirectedUrl());
+      this.setState(
+        state => ({
+          ...state,
+          loggedIn: true,
+          data: { ...state.data, ...res },
+          err: null,
+        }),
+        () => cb(err, getRedirectedUrl())
+      );
     });
   };
 
   logout = () => {
     this.webAuth.logout({
-      clientID: 'sJlfpWnqSjf3wrhSZrRBVi9M8EVZBSNx',
-      returnTo: `http://localhost:8000/logout-callback`,
+      clientID: process.env.auth0_clientId,
+      returnTo: process.env.auth0_logout_returnTo,
     });
   };
 
