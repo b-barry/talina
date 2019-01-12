@@ -6,7 +6,6 @@ import { BANCONTACT_TYPE, CARD_TYPE } from './checkout-form';
 
 const active = 'border-b-2 border-black -mb-4';
 const inactive = 'text-grey-dark hover:text-black';
-// TODO: update cursor when disable
 
 class PaymentStep extends Component {
   constructor(props) {
@@ -33,7 +32,7 @@ class PaymentStep extends Component {
   }
 
   render() {
-    let { totalAmount, title, disabled } = this.props;
+    let { totalAmount, title } = this.props;
     return (
       <div className="flex-grow flex flex-col bg-white border border-grey-lighter overflow-hidden mb-4">
         <div className="px-4 mb-2">
@@ -52,7 +51,6 @@ class PaymentStep extends Component {
               </h2>
               <h2
                 onClick={e => this.setActive(CARD_TYPE)}
-                disabled={disabled}
                 className={`text-sm font-bold tracking-wide uppercase py-2 mr-3 cursor-pointer ${
                   this.isActive(CARD_TYPE) ? active : inactive
                 }`}
@@ -70,7 +68,6 @@ class PaymentStep extends Component {
                     payment.
                   </span>
                   <button
-                    disabled={disabled}
                     onClick={this.handleSubmit}
                     className="w-full mx-auto px-4 py-2 uppercase font-bold text-xs text-white bg-black lg:text-black lg:bg-white border-2 border-black border-solid hover:text-black hover:bg-white"
                   >

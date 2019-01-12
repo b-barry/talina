@@ -28,11 +28,20 @@
   padding-top: 0.25rem;
 }
 
+.py-16{
+  padding-bottom: 4rem;
+  padding-top: 4rem;
+}
+
 .visible {
   visibility: visible;
 }
 .invisible {
   visibility: hidden;
+}
+
+.hidden {
+  display: none;
 }
 
 
