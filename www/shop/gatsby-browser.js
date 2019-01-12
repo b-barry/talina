@@ -6,10 +6,17 @@
 import React from 'react';
 
 import { StoreProvider } from './src/store-context';
+import { TranslationProvider } from './src/translation-context';
 import { UserProvider } from './src/user-context';
 
 require('./src/styles/global.css');
 
 export const wrapRootElement = ({ element }) => (
-  <UserProvider>{<StoreProvider>{element}</StoreProvider>}</UserProvider>
+  <UserProvider>
+    {
+      <StoreProvider>
+        {<TranslationProvider>{element}</TranslationProvider>}
+      </StoreProvider>
+    }
+  </UserProvider>
 );

@@ -1,10 +1,11 @@
-import { Link } from 'gatsby'
-import React from 'react'
-import { StoreContext } from '../store-context'
-import { sumCartQuantities } from '../utils'
-import CartButton from './cart-button'
+import { Link } from 'gatsby';
+import React from 'react';
+import {FormattedMessage} from 'react-intl';
+import { StoreContext } from '../store-context';
+import { sumCartQuantities } from '../utils';
+import CartButton from './cart-button';
 
-const Header = () => {
+const Header = (props) => {
   return (
     <nav className="font-sans bg-white text-center flex justify-between my-4 mx-auto container overflow-hidden items-center">
       <div className="flex items-center">
@@ -21,7 +22,10 @@ const Header = () => {
               to="/"
               className="inline-block py-2 px-3 text-grey-darkest hover:text-grey-dark no-underline"
             >
-              Particuliers
+              <FormattedMessage
+                id="header.particular-label"
+                defaultMessage="##header.particular-label"
+              />
             </Link>
           </li>
           <li>
@@ -29,18 +33,21 @@ const Header = () => {
               to="#"
               className="inline-block py-2 px-3 text-grey-darkest hover:text-grey-dark no-underline"
             >
-              Professionelles
+              <FormattedMessage
+                id="header.professional-label"
+                defaultMessage="##header.professional-label"
+              />
             </Link>
           </li>
         </ul>
       </div>
       <StoreContext.Consumer>
         {({ cart }) => {
-          return <CartButton count={sumCartQuantities(cart)} />
+          return <CartButton count={sumCartQuantities(cart)} />;
         }}
       </StoreContext.Consumer>
     </nav>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;
