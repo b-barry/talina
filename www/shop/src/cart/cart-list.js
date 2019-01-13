@@ -1,9 +1,10 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { sumCartQuantities } from '../utils'
-import CartDeliveryInfo from './cart-delivery-info'
-import CartPaymentInfo from './cart-payment-info'
-import CartRow from './cart-row'
+import PropTypes from 'prop-types';
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import { sumCartQuantities } from '../utils';
+import CartDeliveryInfo from './cart-delivery-info';
+import CartPaymentInfo from './cart-payment-info';
+import CartRow from './cart-row';
 
 function CartList({ cart, onRemoveFromCart, onUpdateQuantity }) {
   return (
@@ -12,7 +13,12 @@ function CartList({ cart, onRemoveFromCart, onUpdateQuantity }) {
         <div className="mb-4 flex-grow flex flex-col bg-white border border-grey-lighter overflow-hidden">
           <div className="px-6 mb-2">
             <p className="text-black pt-4 font-bold text-2xl flex flex-wrap justify-between">
-              <span>Mon panier </span> <span> {sumCartQuantities(cart)} articles </span>
+              <FormattedMessage id="cart.title" defaultMessage="##cart.title" />
+              <FormattedMessage
+                id="cart.item-count-label"
+                defaultMessage="##cart.item-count-label"
+                values={{ itemCount: sumCartQuantities(cart) }}
+              />
             </p>
           </div>
           <ul className="list-reset px-6">
@@ -24,12 +30,15 @@ function CartList({ cart, onRemoveFromCart, onUpdateQuantity }) {
                   onUpdateQuantity={onUpdateQuantity}
                   onRemoveFromCart={onRemoveFromCart}
                 />
-              )
+              );
             })}
           </ul>
           <div className="px-6 py-4">
             <div className="text-left font-normal text-sm text-blue-dark">
-              Les articles dans le panier ne sont pas réservés.
+              <FormattedMessage
+                id="cart.item-booking-time-info"
+                defaultMessage="##cart.item-booking-time-info"
+              />
             </div>
           </div>
         </div>
@@ -37,7 +46,7 @@ function CartList({ cart, onRemoveFromCart, onUpdateQuantity }) {
         <CartPaymentInfo />
       </div>
     </div>
-  )
+  );
 }
 
 CartList.propTypes = {
@@ -60,6 +69,6 @@ CartList.propTypes = {
       quantity: PropTypes.number,
     })
   ).isRequired,
-}
+};
 
-export default CartList
+export default CartList;

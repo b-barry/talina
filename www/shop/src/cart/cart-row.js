@@ -1,20 +1,21 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
+import {FormattedMessage} from 'react-intl';
 import {priceFormat} from '../utils';
 import CartSelectQuantity from './cart-select-quantity';
 
 function CartRow({
-  id,
-  sku: {
-    id: skuId,
-    attributes: { size, pack },
-    product,
-    price
-  },
-  quantity,
-  onUpdateQuantity,
-  onRemoveFromCart,
-}) {
+                   id,
+                   sku: {
+                     id: skuId,
+                     attributes: {size, pack},
+                     product,
+                     price
+                   },
+                   quantity,
+                   onUpdateQuantity,
+                   onRemoveFromCart,
+                 }) {
   return (
     <li className="inline-block border-b border-grey-lighter flex justify-between flex-wrap py-4">
       <div className="flex items-start w-4/5">
@@ -22,9 +23,19 @@ function CartRow({
           <div className="pb-2">
             <span className="text-sm font-normal">{product.name}</span>
           </div>
-          <p className="text-sm font-normal text-grey-dark">Size: {size} cl</p>
           <p className="text-sm font-normal text-grey-dark">
-            Quantitée: {pack}
+            <FormattedMessage
+              id="cart.item-size"
+              defaultMessage="##cart.item-size"
+              values={{size}}
+            />
+          </p>
+          <p className="text-sm font-normal text-grey-dark">
+            <FormattedMessage
+              id="cart.item-quantity"
+              defaultMessage="##cart.item-quantity"
+              values={{quantity: pack}}
+            />
           </p>
         </div>
       </div>
@@ -50,13 +61,16 @@ function CartRow({
             color="#12283A"
           >
             <desc>Icon of a bin (trash)</desc>
-            <path d="M19 6H5m9-1h-4m-4 5v10c0 .667.333 1 1 1h10c.667 0 1-.333 1-1V10" />
+            <path d="M19 6H5m9-1h-4m-4 5v10c0 .667.333 1 1 1h10c.667 0 1-.333 1-1V10"/>
           </svg>
           <button
             className="text-xs text-blue-darkest pt-1"
             onClick={e => onRemoveFromCart(skuId)}
           >
-            Supprimer
+            <FormattedMessage
+              id="cart.item-delete"
+              defaultMessage="##cart.item-delete"
+            />
           </button>
         </div>
         <span className="inline-block font-black font-normal">{priceFormat(price)}</span>

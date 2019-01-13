@@ -1,5 +1,6 @@
 import { navigate } from '@reach/router';
 import React, { Component } from 'react';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import { injectStripe } from 'react-stripe-elements';
 import AccountStep from '../checkout/account-step';
 import PaymentStep from '../checkout/payment-step';
@@ -328,6 +329,7 @@ class CheckoutContainer extends Component {
     const {
       storeContext: { cart },
       userContext,
+      intl,
     } = this.props;
     const passwordlessCodeError = getPasswordlessCodeFromUserContext(
       userContext
@@ -351,7 +353,10 @@ class CheckoutContainer extends Component {
                     }
                     then={
                       <span className="pt-1 px-3 text-sm font-semibold text-red-light ">
-                        Veuillez entrer un valid code
+                        <FormattedMessage
+                          id="error.invalid-user-password-code"
+                          defaultMessage="##error.invalid-user-password-code"
+                        />
                       </span>
                     }
                   />
@@ -368,23 +373,39 @@ class CheckoutContainer extends Component {
               condition={this.isAccountStepDone()}
               then={
                 <AddressStep
-                  title={'Address Delivery'}
+                  title={intl.formatMessage({
+                    id: 'checkout.address-info-title',
+                  })}
                   value={this.state.deliveryAddressInfo}
                   onInputChange={this.deliveryAddressInfoChange}
                 />
               }
-              else={<DisabledStep title={'Address Delivery'} />}
+              else={
+                <DisabledStep
+                  title={intl.formatMessage({
+                    id: 'checkout.address-info-title',
+                  })}
+                />
+              }
             />
             <If
               condition={this.isAddressStepDone()}
               then={
                 <PaymentStep
-                  title={'Payment'}
+                  title={intl.formatMessage({
+                    id: 'checkout.payment-info-title',
+                  })}
                   totalAmount={getTotalPrice(subTotal, SHIPPING_FEE)}
                   onSubmit={this.placeOrder}
                 />
               }
-              else={<DisabledStep title={'Payment'} />}
+              else={
+                <DisabledStep
+                  title={intl.formatMessage({
+                    id: 'checkout.payment-info-title',
+                  })}
+                />
+              }
             />
           </div>
         </div>
@@ -399,4 +420,4 @@ class CheckoutContainer extends Component {
   }
 }
 
-export default injectStripe(CheckoutContainer);
+export default injectIntl(injectStripe(CheckoutContainer));

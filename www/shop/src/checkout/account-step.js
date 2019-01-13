@@ -1,5 +1,6 @@
 import * as PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import { If } from '../components/if';
 
 const isValidEmail = email => {
@@ -56,11 +57,16 @@ class AccountStep extends Component {
 
   render() {
     let { email, code, isEmailSubmitted, isEmailTouched } = this.state;
-    let { children } = this.props;
+    let { children, intl } = this.props;
     return (
       <div className="mb-4 flex-grow flex flex-col  bg-white border border-grey-lighter overflow-hidden">
         <div className="px-4 mb-2">
-          <p className="text-black pt-4 font-bold text-xl">Account</p>
+          <p className="text-black pt-4 font-bold text-xl">
+            <FormattedMessage
+              id="checkout.account-title"
+              defaultMessage="##checkout.account-title"
+            />
+          </p>
         </div>
         <form className="font-sans text-sm rounded w-full max-w-md  mb-4 px-4 pt-3 pb-4 flex content-between flex-wrap">
           <If
@@ -74,13 +80,18 @@ class AccountStep extends Component {
                     type="email"
                     value={email}
                     onChange={this.emailChange}
-                    placeholder="Email"
+                    placeholder={intl.formatMessage({
+                      id: 'checkout.email-field-label',
+                    })}
                   />
                   <label
                     className="absolute block text-grey-darker pin-t pin-l w-full px-3 py-2 leading-normal"
                     htmlFor="email"
                   >
-                    Email
+                    <FormattedMessage
+                      id="checkout.email-field-label"
+                      defaultMessage="##checkout.email-field-label"
+                    />
                   </label>
                 </div>
                 <div className="w-2/4 max-w-sm   sm:flex">
@@ -88,7 +99,10 @@ class AccountStep extends Component {
                     onClick={this.emailSubmit}
                     className="uppercase text-sm text-white focus:outline-0 w-full sm:w-auto bg-black hover:bg-grey-darkest focus:bg-grey-light tracking-wide px-6"
                   >
-                    Add your email
+                    <FormattedMessage
+                      id="checkout.email-field-button"
+                      defaultMessage="##checkout.email-field-button"
+                    />
                   </button>
                 </div>
               </>
@@ -96,7 +110,10 @@ class AccountStep extends Component {
             else={
               <>
                 <span className="mb-2 text-grey text-sm">
-                  An email with the code has been sent to{' '}
+                  <FormattedMessage
+                    id="checkout.email-sent-info"
+                    defaultMessage="##checkout.email-sent-info"
+                  />{' '}
                   <span className="font-bold">{email}</span>.
                 </span>
                 <div className="w-3/5 relative border  appearance-none label-floating mr-2">
@@ -106,13 +123,18 @@ class AccountStep extends Component {
                     value={code}
                     type="code"
                     onChange={this.codeChange}
-                    placeholder="Code"
+                    placeholder={intl.formatMessage({
+                      id: 'checkout.code-field-label',
+                    })}
                   />
                   <label
                     className="absolute block text-grey-darker pin-t pin-l w-full px-3 py-2 leading-normal"
                     htmlFor="code"
                   >
-                    Code
+                    <FormattedMessage
+                      id="checkout.code-field-label"
+                      defaultMessage="##checkout.code-field-label"
+                    />
                   </label>
                 </div>
                 <div className="w-2/4 max-w-sm   sm:flex">
@@ -120,7 +142,10 @@ class AccountStep extends Component {
                     onClick={this.codeSubmit}
                     className="uppercase text-sm text-white focus:outline-0 w-full sm:w-auto bg-black hover:bg-grey-darkest focus:bg-grey-light tracking-wide px-6"
                   >
-                    Submit
+                    <FormattedMessage
+                      id="app.submit"
+                      defaultMessage="##app.submit"
+                    />
                   </button>
                 </div>
               </>
@@ -132,7 +157,10 @@ class AccountStep extends Component {
             }
             then={
               <span className="pt-1 px-3 text-sm font-semibold text-red-light ">
-                Veuillez entrer un valid email
+                <FormattedMessage
+                  id="error.email"
+                  defaultMessage="##error.email"
+                />
               </span>
             }
           />
@@ -146,6 +174,7 @@ class AccountStep extends Component {
 AccountStep.propTypes = {
   value: PropTypes.string,
   onSubmit: PropTypes.func,
+  intl: PropTypes.object,
 };
 
-export default AccountStep;
+export default injectIntl(AccountStep);

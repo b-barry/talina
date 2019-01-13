@@ -1,8 +1,9 @@
 import * as PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { CardElement } from 'react-stripe-elements';
 import { priceFormat } from '../utils';
-import {BANCONTACT_TYPE, CARD_TYPE} from './constant';
+import { BANCONTACT_TYPE, CARD_TYPE } from './constant';
 
 const active = 'border-b-2 border-black -mb-4';
 const inactive = 'text-grey-dark hover:text-black';
@@ -47,7 +48,10 @@ class PaymentStep extends Component {
                   this.isActive(BANCONTACT_TYPE) ? active : inactive
                 }`}
               >
-                Bancontact
+                <FormattedMessage
+                  id="app.bancontact"
+                  defaultMessage="##app.bancontact"
+                />
               </h2>
               <h2
                 onClick={e => this.setActive(CARD_TYPE)}
@@ -55,7 +59,10 @@ class PaymentStep extends Component {
                   this.isActive(CARD_TYPE) ? active : inactive
                 }`}
               >
-                Credit Card
+                <FormattedMessage
+                  id="app.credit-card"
+                  defaultMessage="##app.credit-card"
+                />
               </h2>
             </div>
           </section>
@@ -64,14 +71,20 @@ class PaymentStep extends Component {
               <div className="flex justify-between items-center">
                 <div className="w-full flex flex-col ">
                   <span className="my-2 text-grey text-sm">
-                    You’ll be redirected to the banking site to complete your
-                    payment.
+                    <FormattedMessage
+                      id="app.processing-payment-redirection"
+                      defaultMessage="##app.processing-payment-redirection"
+                    />
                   </span>
                   <button
                     onClick={this.handleSubmit}
                     className="w-full mx-auto px-4 py-2 uppercase font-bold text-xs text-white bg-black lg:text-black lg:bg-white border-2 border-black border-solid hover:text-black hover:bg-white"
                   >
-                    Payer {priceFormat(totalAmount)} avec Bancontact
+                    <FormattedMessage
+                      id="checkout.bancontact-pay-button"
+                      defaultMessage="##checkout.bancontact-pay-button"
+                      values={{ amount: priceFormat(totalAmount) }}
+                    />
                   </button>
                 </div>
               </div>
@@ -90,7 +103,11 @@ class PaymentStep extends Component {
                     onClick={this.handleSubmit}
                     className="w-full mx-auto px-4 py-2 uppercase font-bold text-xs text-white bg-black lg:text-black lg:bg-white border-2 border-black border-solid hover:text-black hover:bg-white"
                   >
-                    Payer {priceFormat(totalAmount)}
+                    <FormattedMessage
+                      id="checkout.credit-card-pay-button"
+                      defaultMessage="##checkout.credit-card-pay-button"
+                      values={{ amount: priceFormat(totalAmount) }}
+                    />
                   </button>
                 </div>
               </div>

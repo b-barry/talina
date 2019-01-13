@@ -1,6 +1,7 @@
 import { Link } from 'gatsby';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import { getTotalPrice, priceFormat } from '../utils';
 
 function CheckoutSummary({
@@ -16,12 +17,18 @@ function CheckoutSummary({
     >
       <div className="flex-grow flex flex-col bg-white border border-grey-lighter overflow-hidden mb-4">
         <div className="px-6 mb-2 flex flex-row justify-between ">
-          <p className="text-black py-4 font-bold text-2xl">{items.length} items</p>
+          <p className="text-black py-4 font-bold text-2xl">
+            <FormattedMessage
+              id="cart.item-count-label"
+              defaultMessage="##cart.item-count-label"
+              values={{ count: items.length }}
+            />
+          </p>
           <Link
             to="/cart"
             className="inline-block py-5 text-grey-darkest hover:text-grey-dark "
           >
-            Edit
+            <FormattedMessage id="app.edit" defaultMessage="##app.edit" />
           </Link>
         </div>
         {items.map(item => {
@@ -49,7 +56,12 @@ function CheckoutSummary({
         <div className="flex justify-between items-center mb-4">
           <div className="w-3/4 pl-6 flex items-center">
             <div className="w-full flex border-b border-t border-grey-lighter-lighter py-4">
-              <span className="text-sm">Livraison </span>
+              <span className="text-sm">
+                <FormattedMessage
+                  id="cart.shipping"
+                  defaultMessage="##cart.shipping"
+                />
+              </span>
             </div>
           </div>
           <div className="w-1/4 pr-6 flex items-center text-right">
@@ -63,7 +75,12 @@ function CheckoutSummary({
         <div className="flex justify-between items-center mb-8">
           <div className="w-3/4 pl-6 flex items-center">
             <div className="w-full flex">
-              <span className="text-sm font-bold">Total (TVA incluse)</span>
+              <span className="text-sm font-bold">
+                <FormattedMessage
+                  id="cart.total-with-vat"
+                  defaultMessage="##cart.total-with-vat"
+                />
+              </span>
             </div>
           </div>
           <div className="w-1/4 pr-6 flex items-center text-right">
