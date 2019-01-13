@@ -19,16 +19,18 @@ import { getTotalPrice, sumCartPrices, to } from '../utils';
 import AccountFilledStep from './account-filled-step';
 import AddressStep from './address-step';
 import CheckoutSummary from './checkout-summary';
-import { BANCONTACT_TYPE, CARD_TYPE, SHIPPING_FEE } from './constant';
+import {
+  BANCONTACT_TYPE,
+  CARD_TYPE,
+  FAILED_PROCESSING_STATE,
+  NO_PROCESSING_STATE, PENDING_PROCESSING_STATE,
+  SHIPPING_FEE,
+  START_PROCESSING_STATE, SUCCESS_PROCESSING_STATE
+} from './constant';
 import DisabledStep from './disabled-step';
 import {
-  FAILED_PROCESSING_STATE,
-  NO_PROCESSING_STATE,
   PaymentProcessingState,
-  PENDING_PROCESSING_STATE,
-  START_PROCESSING_STATE,
-  SUCCESS_PROCESSING_STATE,
-} from './payment-processing-state';
+  } from './payment-processing-state';
 
 const getItemsFromCart = (cart = []) => {
   return cart.map(({ id, quantity, sku: { price, product, attributes } }) => {

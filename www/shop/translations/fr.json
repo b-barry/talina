@@ -41,5 +41,14 @@
   "checkout.delivery-address-name-field-label": "Addresse de livraison",
   "checkout.payment-info-title": "Information de payement",
   "checkout.bancontact-pay-button": "Payer {amount} avec Bancontact",
-  "checkout.credit-card-pay-button": "Payer {amount}"
+  "checkout.credit-card-pay-button": "Payer {amount}",
+  "checkout.payment-processing-title": "Processement du payement",
+  "checkout.pending-payment-processing-title": "Pending proccessing",
+  "checkout.pending-payment-processing-sub-title": "We’re just waiting for the confirmation from your bank… This might take a moment",
+  "checkout.success-payment-processing-title": "Thanks for your order!",
+  "checkout.success-payment-processing-sub-title": " Woot! You successfully made a payment with Stripe.",
+  "checkout.success-payment-processing-note": "We just sent your receipt to your email address, and your items\n              will be on their way shortly.",
+  "checkout.failed-payment-processing-title": "Oops, payment failed.",
+  "checkout.failed-payment-processing-sub-title": " It looks like your order could not be paid at this time. Please\n              try again or select a different payment option.",
+  "checkout.failed-payment-processing-action": "Ressayez"
 }

@@ -87,7 +87,7 @@ function CartSummary({
               <div className="w-full px-6 flex items-center">
                 <Link
                   to="/checkout"
-                  className="w-full mx-auto px-4 py-2 uppercase font-bold text-xs text-white bg-black lg:text-black lg:bg-white border-2 border-black border-solid hover:text-black hover:bg-white"
+                  className="w-full mx-auto px-4 py-2 uppercase font-bold text-xs text-white bg-black lg:text-black lg:bg-white border-2 border-black border-solid hover:text-black hover:bg-white no-underline text-center"
                 >
                   <FormattedMessage
                     id="cart.order"
