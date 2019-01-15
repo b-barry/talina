@@ -1,30 +1,27 @@
 import { responseJson } from '../lib/util';
-import { addToCart } from '../lib/airtable';
 import parse from 'url-parse';
 import { getSkusWithProduct, isSkuValid } from '../lib/stripe';
+import {addToCart} from '../lib/db/cart-item-queries';
 
 module.exports = async (req, res) => {
   const { query } = parse(req.url || '', true);
   if (!query || !query.customerCartId) {
-    responseJson(res, { error: 'customerCartId is required' }, 400);
-    return;
+    return responseJson(res, { error: 'customerCartId is required' }, 400);
   }
 
   if (!query || !query.skuId) {
-    responseJson(res, { error: 'skuId is required' }, 400);
-    return;
+    return responseJson(res, { error: 'skuId is required' }, 400);
   }
 
   const { customerCartId, skuId } = query;
 
   if (!(await isSkuValid(skuId))) {
-    responseJson(res, { error: 'skuId is not valid' }, 400);
-    return;
+    return responseJson(res, { error: 'skuId is not valid' }, 400);
   }
 
   const record = await addToCart(customerCartId, skuId);
-  responseJson(res, {
-    ...record.fields,
-    sku: await getSkusWithProduct(record.fields.stripeSkuId),
+  return responseJson(res, {
+    ...record,
+    sku: await getSkusWithProduct(record.skuId),
   });
 };

@@ -1,9 +1,6 @@
 {
   "version": 2,
-  "env": {
-    "stripe_api_key": "@stripe_api_key",
-    "airtable_api_key": "@airtable_api_key"
-  },
+  "env": {},
   "builds": [
     {
       "src": "dist/**/*.js",

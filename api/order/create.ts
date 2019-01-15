@@ -1,7 +1,7 @@
 import {createError, isOptions, isPost, responseError, responseJson, to,} from '../lib/util';
 import {CreateOrderRequest, Order, OrderItems} from './symbol';
-import {getAllCartItemsByCartId} from '../lib/airtable';
 import {create} from '../lib/stripe/orders';
+import {getAllCartItemsByCartId} from '../lib/db/cart-item-queries';
 
 module.exports = async (req, res) => {
   if (isOptions(req)) {
@@ -34,8 +34,8 @@ module.exports = async (req, res) => {
   const orderItems: OrderItems[] = cartItems.map(item => {
     return {
       type: 'sku',
-      skuId: item.fields.stripeSkuId,
-      quantity: item.fields.quantity,
+      skuId: item.skuId,
+      quantity: item.quantity,
     };
   });
   const { cartId, ...rest } = body as CreateOrderRequest;

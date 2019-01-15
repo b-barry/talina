@@ -1,43 +1,38 @@
-import { responseJson } from '../lib/util';
-import { getSkusWithProduct, hasInStock, isSkuValid } from '../lib/stripe';
-import { addToCart, updateQuantity } from '../lib/airtable';
+import { responseJson, to } from '../lib/util';
+import { getSkusWithProduct, hasInStock } from '../lib/stripe';
 import parse from 'url-parse';
+import { updateQuantity } from '../lib/db/cart-item-queries';
 
 module.exports = async (req, res) => {
   const { query } = parse(req.url || '', true);
   if (!query || !query.customerCartId) {
-    responseJson(res, { error: 'customerCartId is required' }, 400);
-    return;
+    return responseJson(res, { error: 'customerCartId is required' }, 400);
   }
 
   if (!query || !query.skuId) {
-    responseJson(res, { error: 'skuId is required' }, 400);
-    return;
+    return responseJson(res, { error: 'skuId is required' }, 400);
   }
 
   if (!query || !query.quantity) {
-    responseJson(res, { error: 'quantity is required' }, 400);
-    return;
+    return responseJson(res, { error: 'quantity is required' }, 400);
   }
 
   const { customerCartId, skuId, quantity } = query;
 
   if (!(await hasInStock(skuId, quantity))) {
-    responseJson(res, { error: 'insufficient stock' }, 400);
-    return;
+    return responseJson(res, { error: 'insufficient stock' }, 400);
   }
 
-  const record = await updateQuantity(
-    customerCartId,
-    skuId,
-    parseInt(quantity, 10)
+  const [updateQuantityError, record] = await to(
+    updateQuantity(customerCartId, skuId, parseInt(quantity, 10))
   );
-  if (!record) {
-    responseJson(res, { error: 'impossible to update quantity' }, 400);
-    return;
+
+  if (updateQuantityError || !record) {
+    return responseJson(res, { error: 'impossible to update quantity' }, 400);
   }
+
   responseJson(res, {
-    ...record.fields,
-    sku: await getSkusWithProduct(record.fields.stripeSkuId),
+    ...record,
+    sku: await getSkusWithProduct(record.skuId),
   });
 };

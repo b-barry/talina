@@ -1,21 +1,22 @@
-import { responseJson } from '../lib/util';
-import { removeByCartIdAndSkuId } from '../lib/airtable';
+import { responseJson, to } from '../lib/util';
 import parse from 'url-parse';
+import { removeByCartIdAndSkuId } from '../lib/db/cart-item-queries';
 
 module.exports = async (req, res) => {
   const { query } = parse(req.url || '', true);
   if (!query || !query.customerCartId) {
-    responseJson(res, { error: 'customerCartId is required' }, 400);
-    return;
+    return responseJson(res, { error: 'customerCartId is required' }, 400);
   }
 
   if (!query || !query.skuId) {
-    responseJson(res, { error: 'skuId is required' }, 400);
-    return;
+    return responseJson(res, { error: 'skuId is required' }, 400);
   }
 
   const { customerCartId, skuId } = query;
 
-  const success = await removeByCartIdAndSkuId(customerCartId, skuId);
-  responseJson(res, {}, success ? 200 : 400);
+  const [error] = await to(removeByCartIdAndSkuId(customerCartId, skuId));
+  if (error) {
+    return responseJson(res, {}, 400);
+  }
+  responseJson(res, {}, 200);
 };
